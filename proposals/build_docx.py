@@ -371,7 +371,16 @@ def build_cover(doc, cover):
         p.paragraph_format.space_after = Pt(after)
         style_run(p.add_run(text), size=size, bold=bold, color=color)
 
-    line("RoboAgentix", 20, True, WHITE, after=26, first=True)
+    logo = ROOT / "assets/logo-light.png"
+    if logo.exists():
+        # Deliberately not rtl_para: a paragraph holding only a picture gets its
+        # alignment ignored once w:bidi is set, so plain right alignment is used.
+        p = c.paragraphs[0]
+        p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+        p.paragraph_format.space_after = Pt(24)
+        p.add_run().add_picture(str(logo), width=Inches(2.5))
+    else:
+        line("RoboAgentix", 20, True, WHITE, after=26, first=True)
     badge = cover.select_one(".badge")
     if badge:
         line(clean(badge.get_text()), 9, False, PALE, after=4)

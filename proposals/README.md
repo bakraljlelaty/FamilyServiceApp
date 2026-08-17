@@ -67,13 +67,19 @@ colour swatches — as pictures, because Word has no faithful equivalent.
 
 ## The logo
 
-The cover and running header draw the wordmark in CSS as a fallback. To use the
-real artwork instead, drop it in as:
+Both builds use the real RoboAgentix artwork:
 
-- `assets/logo-light.png` — white version, for the dark cover
-- `assets/logo-dark.png` — dark version, for the running header
+- `assets/logo-light.png` — white on transparent, for the dark cover and the
+  Word cover block
+- `assets/logo-dark.png` — full-colour on transparent, for the running header
 
-Both builds pick the files up automatically; no code change needed.
+`logo-dark.png` was derived from the supplied white-background artwork by
+keying the white out: pixels lighter than luminance 250 become transparent,
+anything below 235 stays fully opaque so the brand green keeps its colour, and
+only the thin anti-aliased edge band in between gets partial alpha.
+
+If either file is missing the builds fall back to a wordmark drawn in CSS, so
+nothing breaks — but the real files are committed and should be used.
 
 ## Layout
 

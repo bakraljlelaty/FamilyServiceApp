@@ -63,7 +63,7 @@ body{
 .logo-img{display:none;}
 .has-logo .logo-img{display:block;}
 .has-logo .ra{display:none;}
-.cover .logo-img{height:17mm;width:auto;}
+.cover .logo-img{height:14mm;width:auto;}
 
 /* ─────────── cover ─────────── */
 .cover{position:relative;width:210mm;height:297mm;overflow:hidden;color:#fff;

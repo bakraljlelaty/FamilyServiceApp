@@ -69,7 +69,7 @@ def header_logo() -> str:
         return LOGO_FALLBACK
     import base64
     b64 = base64.b64encode(LOGO_DARK.read_bytes()).decode()
-    return f'<img src="data:image/png;base64,{b64}" style="height:15px;width:auto;display:block;">'
+    return f'<img src="data:image/png;base64,{b64}" style="height:12px;width:auto;display:block;">'
 
 
 def _bar(left: str, right: str, pad_top: str, pad_bottom: str) -> str:

@@ -3,10 +3,18 @@
 Two Arabic (RTL) proposal documents for **عَوْنَك / AWNAK**, the home-and-family
 services platform, produced for RoboAgentix For Software Development.
 
+Each is produced as both a **PDF** (the presentation artefact) and a **.docx**
+(the working one — prices and wording stay editable).
+
 | Output | Pages | Covers |
 | --- | --- | --- |
-| `out/RoboAgentix-AWNAK-01-Technical-Proposal-AR.pdf` | 34 | What gets built and with which technology — architecture, stack, data model, dispatch engine, order lifecycle, money layer, integrations, security, performance, delivery artefacts |
-| `out/RoboAgentix-AWNAK-02-Commercial-Proposal-AR.pdf` | 21 | Line-item pricing, methodology, schedule, team, payment plan, warranty and support, change control, ownership, acceptance criteria |
+| `RoboAgentix-AWNAK-01-Technical-Proposal-AR` | 34 | What gets built and with which technology — architecture, stack, data model, dispatch engine, order lifecycle, money layer, integrations, security, performance, delivery artefacts |
+| `RoboAgentix-AWNAK-02-Commercial-Proposal-AR` | 22 | Line-item pricing, delivery model, 16-week schedule, payment plan, warranty and support, change control, ownership, acceptance criteria |
+
+Headline commercial figures: **$13,500** for phase one over **16 weeks**, five
+payments tied to milestones, 180 days of warranty, and **$11,000** of phase-two
+options priced individually. Each external integration is priced on its own
+line, as the specification requires.
 
 Document references are `RAX-TEC-AWNAK-001` and `RAX-FIN-AWNAK-001`, both Rev. A.
 The two are written to be read together: every price line in the commercial
@@ -19,7 +27,8 @@ document points at a scope described in the technical one.
   somewhere in the technical document.
 - **Product design** — the approved AWNAK customer-app prototype. Its 15 screens
   were captured into `assets/screens/` and its design tokens (teal `#147D73`,
-  Tajawal) are documented in §12 of the technical proposal.
+  Tajawal) are documented in §12 of the technical proposal. The prototype is
+  what the client is shown; no Figma files are part of the deliverables.
 - **Document design** — the RoboAgentix house proposal style: dark forest-green
   cover, black section headings over a green rule, green table headers, stat
   tiles, and a running header/footer carrying the logo, the revision line, the
@@ -28,8 +37,9 @@ document points at a scope described in the technical one.
 ## Build
 
 ```bash
-pip install playwright pypdfium2 pillow
-python3 proposals/build.py          # both documents
+pip install playwright pypdfium2 pillow python-docx beautifulsoup4 lxml
+python3 proposals/build.py          # PDFs   — both documents
+python3 proposals/build_docx.py     # Word   — both documents
 python3 proposals/build.py 01       # just the technical one
 ```
 
@@ -46,18 +56,38 @@ parse — which silently takes the font sizes down with it. The templates
 therefore resolve Tajawal by family name from the system font cache;
 `ensure_fonts()` installs it from `assets/fonts/` if it is missing.
 
+`build_docx.py` emits native Word text and tables so the document stays
+editable, and embeds only the genuinely visual blocks — the Gantt chart and the
+colour swatches — as pictures, because Word has no faithful equivalent.
+
+> Word is strict about OOXML child ordering inside `rPr`/`pPr`/`tblPr`/`tcPr`.
+> Elements appended at the end produce a file Word tolerates but LibreOffice
+> refuses to open. `build_docx.py` inserts at the schema position instead — see
+> `_ORDER`. A table cell must also never end on a nested table.
+
+## The logo
+
+The cover and running header draw the wordmark in CSS as a fallback. To use the
+real artwork instead, drop it in as:
+
+- `assets/logo-light.png` — white version, for the dark cover
+- `assets/logo-dark.png` — dark version, for the running header
+
+Both builds pick the files up automatically; no code change needed.
+
 ## Layout
 
 ```
 proposals/
   build.py                  # HTML -> PDF
+  build_docx.py             # HTML -> Word
   src/01-technical.html     # content
   src/02-commercial.html
   assets/theme.css          # the RoboAgentix document theme
   assets/fonts/             # Tajawal + IBM Plex Sans Arabic
   assets/screens/           # 15 AWNAK screens from the approved prototype
   assets/awnak-mark.png     # AWNAK app mark
-  out/                      # generated PDFs
+  out/                      # generated PDFs and .docx
 ```
 
 ## Editing

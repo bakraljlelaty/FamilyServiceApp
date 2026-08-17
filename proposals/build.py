@@ -38,19 +38,38 @@ table.bar{width:100%;border-collapse:collapse;font-family:'Tajawal',sans-serif;
           font-size:7px;color:#8B968F;}
 table.bar td{padding:0;vertical-align:middle;white-space:nowrap;}
 .l{text-align:left;} .r{text-align:right;direction:rtl;}
-.ra{font-weight:700;font-size:8px;color:#141414;letter-spacing:-.02em;
+.ra{font-weight:700;font-size:11px;color:#141414;letter-spacing:-.02em;
      white-space:nowrap;direction:ltr;}
-.dot{display:inline-block;background:#14512F;border-radius:2.4px;width:11px;height:6px;
-      position:relative;top:1px;margin:0 .5px;}
-.dot i{position:absolute;top:2px;width:2px;height:2px;border-radius:50%;background:#fff;}
-.dot i.a{left:2.4px;} .dot i.b{right:2.4px;}
+.dot{display:inline-block;background:#14512F;border-radius:3.3px;width:15px;height:8.2px;
+      position:relative;top:1px;margin:0 .7px;}
+.dot i{position:absolute;top:2.7px;width:2.8px;height:2.8px;border-radius:50%;background:#fff;}
+.dot i.a{left:3.2px;} .dot i.b{right:3.2px;}
 .ix{color:#14512F;}
 .conf{color:#14512F;font-weight:700;}
 .pg{color:#5F6B65;font-weight:700;direction:ltr;display:inline-block;}
 """
 
-LOGO = ('<span class="ra">Rob<span class="dot"><i class="a"></i><i class="b"></i></span>'
-        'Agent<span class="ix">ix</span></span>')
+LOGO_FALLBACK = ('<span class="ra">Rob<span class="dot"><i class="a"></i><i class="b"></i></span>'
+                 'Agent<span class="ix">ix</span></span>')
+
+# Drop the real artwork in as assets/logo-light.png (white, for the dark cover)
+# and assets/logo-dark.png (dark, for the running header) and both the cover and
+# the header pick it up automatically. Without them the drawn lockup is used.
+LOGO_LIGHT = ROOT / "assets/logo-light.png"
+LOGO_DARK = ROOT / "assets/logo-dark.png"
+
+
+def header_logo() -> str:
+    """The running header can only carry the artwork inline, as a data URI.
+
+    Safe here because it goes in the template body — it is specifically a large
+    data URI inside <style> that breaks the template stylesheet parse.
+    """
+    if not LOGO_DARK.exists():
+        return LOGO_FALLBACK
+    import base64
+    b64 = base64.b64encode(LOGO_DARK.read_bytes()).decode()
+    return f'<img src="data:image/png;base64,{b64}" style="height:15px;width:auto;display:block;">'
 
 
 def _bar(left: str, right: str, pad_top: str, pad_bottom: str) -> str:
@@ -62,7 +81,7 @@ def _bar(left: str, right: str, pad_top: str, pad_bottom: str) -> str:
 
 
 def header(doc_title: str) -> str:
-    return _bar(LOGO, f'<span>{doc_title}</span>', "11mm", "0")
+    return _bar(header_logo(), f'<span>{doc_title}</span>', "11mm", "0")
 
 
 def footer() -> str:
@@ -141,6 +160,8 @@ def build(only: str | None = None) -> None:
                 print(f"  skip {src_name} (not found)")
                 continue
             page.goto(src.as_uri(), wait_until="networkidle", timeout=120_000)
+            if LOGO_LIGHT.exists():
+                page.evaluate("document.documentElement.classList.add('has-logo')")
             page.emulate_media(media="print")
             page.wait_for_timeout(1500)
 

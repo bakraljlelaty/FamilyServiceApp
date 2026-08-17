@@ -1,3 +1,4 @@
 proposals/out/.tmp/
 __pycache__/
 .DS_Store
+proposals/out/.figures/

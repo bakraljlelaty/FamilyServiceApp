@@ -1,0 +1,1340 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<title>AWNAK — Technical Proposal</title>
+<link rel="stylesheet" href="../assets/theme-en.css">
+</head>
+<body>
+
+<!-- ═══════════════════ COVER ═══════════════════ -->
+<div class="cover">
+  <div class="grid"></div>
+  <div class="inner">
+    <span class="brandmark"><img class="logo-img" src="../assets/logo-light.png" alt="RoboAgentix"><span class="ra light">Rob<span class="bot"><i></i><i></i></span>Agent<span class="ix">ix</span></span></span>
+
+    <div class="mid">
+      <span class="badge">Technical Proposal</span>
+      <h1>What we will build, and with what</h1>
+      <div class="sub">AWNAK — Home &amp; Family Services Platform</div>
+      <p class="desc">
+        The full engineering specification: system architecture, the technology stack and
+        why each part was chosen, the data model, the dispatch engine, the order lifecycle,
+        the money layer and commission rules, external integrations, and the security,
+        performance and scalability standards — with the phase-one scope stated precisely.
+      </p>
+      <div class="hair"></div>
+      <span class="conf">Commercial in confidence</span>
+    </div>
+
+    <div class="metawrap">
+      <div class="meta">
+        <div><div class="k">Document</div><div class="v">RAX-TEC-AWNAK-001-EN</div></div>
+        <div><div class="k">Revision</div><div class="v">Rev. A</div></div>
+        <div><div class="k">Issued</div><div class="v">17 August 2026</div></div>
+        <div><div class="k">Valid until</div><div class="v">16 September 2026</div></div>
+      </div>
+    </div>
+    <div class="cfoot">
+      RoboAgentix For Software Development &nbsp;·&nbsp; Doha, Qatar &nbsp;·&nbsp;
+      roboagentix.ai &nbsp;·&nbsp; contact@roboagentix.ai &nbsp;·&nbsp; +974 3127 6894
+      <div style="margin-top:1.5mm">
+        Prepared for the owner of the AWNAK project, against the home-and-family services
+        requirements specification. Read together with RAX-FIN-AWNAK-001-EN — the Commercial
+        Proposal, Ways of Working and Delivery.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TOC ═══════════════════ -->
+<section>
+  <h2>Contents</h2><div class="h2rule"></div>
+  <div class="toc cols2">
+    <div class="i"><span class="n">1</span><span class="t">Executive summary</span></div>
+    <div class="i"><span class="n">2</span><span class="t">Understanding the project and scope boundaries</span></div>
+    <div class="i"><span class="n">3</span><span class="t">System architecture</span></div>
+    <div class="i"><span class="n">4</span><span class="t">Technology stack and the reasoning behind it</span></div>
+    <div class="i"><span class="n">5</span><span class="t">Data model and database</span></div>
+    <div class="i"><span class="n">6</span><span class="t">Matching and dispatch engine</span></div>
+    <div class="i"><span class="n">7</span><span class="t">Order lifecycle and pricing models</span></div>
+    <div class="i"><span class="n">8</span><span class="t">Payments, wallet and commission</span></div>
+    <div class="i"><span class="n">9</span><span class="t">In-app messaging and notifications</span></div>
+    <div class="i"><span class="n">10</span><span class="t">Search, filtering and Arabic text handling</span></div>
+    <div class="i"><span class="n">11</span><span class="t">Maps and location</span></div>
+    <div class="i"><span class="n">12</span><span class="t">Visual identity and design system</span></div>
+    <div class="i"><span class="n">13</span><span class="t">Mobile app — the customer journey</span></div>
+    <div class="i"><span class="n">14</span><span class="t">Provider mode and provider dashboard</span></div>
+    <div class="i"><span class="n">15</span><span class="t">Admin panel and permissions</span></div>
+    <div class="i"><span class="n">16</span><span class="t">Reporting and export engine</span></div>
+    <div class="i"><span class="n">17</span><span class="t">Marketing website</span></div>
+    <div class="i"><span class="n">18</span><span class="t">External integrations</span></div>
+    <div class="i"><span class="n">19</span><span class="t">Security and data protection</span></div>
+    <div class="i"><span class="n">20</span><span class="t">Performance and scalability</span></div>
+    <div class="i"><span class="n">21</span><span class="t">Reliability, backup and monitoring</span></div>
+    <div class="i"><span class="n">22</span><span class="t">Testing and quality assurance</span></div>
+    <div class="i"><span class="n">23</span><span class="t">Infrastructure, deployment and operations</span></div>
+    <div class="i"><span class="n">24</span><span class="t">Readiness for future expansion</span></div>
+    <div class="i"><span class="n">25</span><span class="t">Technical deliverables at handover</span></div>
+  </div>
+
+  <div class="note" style="margin-top:9mm">
+    <span class="t">How to read this document</span>
+    This document answers one question: <strong>what will be built, with what technology, and
+    within what boundaries</strong>. Prices, the payment plan, durations, ways of working,
+    delivery and warranty are in the second document, RAX-FIN-AWNAK-001-EN. The two are
+    complementary and neither should be read in isolation.
+  </div>
+</section>
+
+<!-- ═══════════════════ 1 ═══════════════════ -->
+<section class="page-break">
+  <h2><span class="n">1</span> Executive summary</h2><div class="h2rule"></div>
+
+  <p class="lead">
+    What is required is not a directory of tradespeople, nor a classified-ads platform, but a
+    complete service operations and management platform — beginning with a customer's need and
+    ending with a financial report. That understanding shaped every engineering decision in
+    this document.
+  </p>
+
+  <p>
+    We read the requirements specification in full, across all thirty-two of its sections, and
+    built an interactive prototype of the customer journey which was approved visually before
+    this proposal was written. Our conclusion is that the success of <em>AWNAK</em> rests on
+    four engineering pillars, not on a screen count:
+  </p>
+
+  <div class="cards c2">
+    <div class="card fill">
+      <div class="h">Service categories that flex without code</div>
+      <div class="b">The specification states explicitly that the operator must be able to add
+        new categories and services <strong>without any programming change</strong>. The
+        catalogue is therefore built on a dynamic field schema defined from the admin panel,
+        not on fixed tables per trade.</div>
+    </div>
+    <div class="card fill">
+      <div class="h">A dispatch engine, not a search list</div>
+      <div class="b">An order is not merely published — it is routed against ten criteria:
+        specialisation, location, coverage radius, rating, response speed and availability.
+        That is a scoring engine whose weights are tunable from the panel.</div>
+    </div>
+    <div class="card fill">
+      <div class="h">A ledger, not a "price" field</div>
+      <div class="b">Held funds, multi-rule commission, additional costs, partial refunds and
+        provider balances all require <strong>double-entry bookkeeping</strong>. Anything less
+        makes the balances impossible to audit later.</div>
+    </div>
+    <div class="card fill">
+      <div class="h">Arabic-first, not translated</div>
+      <div class="b">Native RTL layout, search that tolerates variant spellings of hamza and
+        taa marbuta, grammatical gender that follows the account, and type sizing that respects
+        older users — handled in the search layer and the interface together.</div>
+    </div>
+  </div>
+
+  <h3>1.1 Phase one in numbers</h3>
+  <div class="stats">
+    <div class="s"><div class="v g">1</div><div class="l">unified app<br>customer + provider</div></div>
+    <div class="s"><div class="v g">2</div><div class="l">platforms<br>Android and iOS</div></div>
+    <div class="s"><div class="v g">6</div><div class="l">pricing models<br>fully supported</div></div>
+    <div class="s"><div class="v g">15</div><div class="l">order states<br>in the state machine</div></div>
+  </div>
+  <div class="stats">
+    <div class="s"><div class="v">11</div><div class="l">main categories<br>with sub-services</div></div>
+    <div class="s"><div class="v">15</div><div class="l">approved screens<br>in the customer journey</div></div>
+    <div class="s"><div class="v">9</div><div class="l">external integrations<br>each priced separately</div></div>
+    <div class="s"><div class="v">24</div><div class="l">admin reports<br>all exportable</div></div>
+  </div>
+
+  <h3>1.2 A foundational architectural decision</h3>
+  <div class="note">
+    <span class="t">One account, two modes — not two accounts</span>
+    As the specification requires, identity <em>(User)</em> is separated from the professional
+    profile <em>(Provider Profile)</em> in the data model. A user remains a single user and a
+    professional profile is attached after verification. This prevents duplicated records,
+    makes switching between customer mode and provider mode instantaneous without signing out,
+    and keeps order history and ratings tied to one identity.
+  </div>
+</section>
+
+<!-- ═══════════════════ 2 ═══════════════════ -->
+<section class="page-break">
+  <h2><span class="n">2</span> Understanding the project and scope boundaries</h2><div class="h2rule"></div>
+
+  <h3>2.1 The four project components</h3>
+  <table>
+    <thead><tr><th style="width:24%">Component</th><th>Description</th><th style="width:14%" class="mid">Phase</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Mobile application</strong></td>
+        <td>A single app on Android and iOS, allowing a switch between customer mode and
+          provider mode without two separate accounts.</td>
+        <td class="mid"><span class="tag g">Phase 1</span></td></tr>
+      <tr><td><strong>Admin panel</strong></td>
+        <td>A web application to manage customers, providers, orders, quotes, payments,
+          commissions, complaints, ratings, notifications, content, reports, coverage areas,
+          service categories, and staff with their permissions.</td>
+        <td class="mid"><span class="tag g">Phase 1</span></td></tr>
+      <tr><td><strong>Marketing website</strong></td>
+        <td>A landing page covering the app introduction, service types, how to order, how to
+          register as a provider, download links, terms, privacy policy, FAQ and a contact form.</td>
+        <td class="mid"><span class="tag g">Phase 1</span></td></tr>
+      <tr><td><strong>Backend system</strong></td>
+        <td>Backend server, database, APIs, media handling, geolocation, notifications,
+          payments, permissions, logs and reporting.</td>
+        <td class="mid"><span class="tag g">Phase 1</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.2 Functionality included in phase one</h3>
+  <ul class="check cols2 small">
+    <li>Customer registration by phone with OTP</li>
+    <li>Provider registration and document verification</li>
+    <li>Dynamic service category management</li>
+    <li>Location and multiple saved addresses</li>
+    <li>Creating a service order with photos and video</li>
+    <li>Dispatching the order to matching providers</li>
+    <li>Submitting and comparing quotes</li>
+    <li>Selecting a provider and closing quoting</li>
+    <li>In-app messaging</li>
+    <li>Tracking the fifteen order states</li>
+    <li>Cash payment on completion</li>
+    <li>One electronic payment gateway</li>
+    <li>Manageable commission calculation</li>
+    <li>Two-way ratings</li>
+    <li>Complaints and dispute handling</li>
+    <li>Push notifications</li>
+    <li>Customer and provider profiles</li>
+    <li>Portfolio of previous work</li>
+    <li>Complete admin panel</li>
+    <li>Core reports and export</li>
+    <li>Arabic language with RTL support</li>
+    <li>Marketing website</li>
+    <li>Publishing to Google Play and the App Store</li>
+    <li>Admin training and source code handover</li>
+  </ul>
+
+  <h3>2.3 Functionality deferred to phase two</h3>
+  <p class="small">
+    Outside the phase-one scope and priced item by item in the commercial document. Each has
+    been accounted for architecturally so that enabling it later requires no rebuild:
+  </p>
+  <div class="pills">
+    <span class="pill">Company and team accounts</span><span class="pill">Electronic wallet</span>
+    <span class="pill">Escrow hold and release</span><span class="pill">Live provider tracking</span>
+    <span class="pill">Paid subscriptions</span><span class="pill">Referral programme</span>
+    <span class="pill">Loyalty programme</span><span class="pill">Discount codes</span>
+    <span class="pill">Emergency services</span><span class="pill">Recurring orders</span>
+    <span class="pill">Maintenance subscriptions</span><span class="pill">English language</span>
+    <span class="pill">Advanced reporting</span><span class="pill">Technician scheduling</span>
+    <span class="pill">Multi-criteria ratings</span><span class="pill">Service guarantee</span>
+    <span class="pill">In-app calling</span><span class="pill">Multi-city / multi-country</span>
+  </div>
+
+  <div class="note warn">
+    <span class="t">Scope boundaries</span>
+    The items listed in section twenty-seven of the specification — purchasing hardware or
+    servers; payment gateway, messaging, maps and app store fees; marketing photography;
+    provider data entry; the call centre; advertising campaigns; visual identity; professional
+    translation; and insurance — are <strong>not included</strong> unless stated explicitly in
+    the commercial proposal. The full detail is in section 8 of the commercial document.
+  </div>
+</section>
+
+<!-- ═══════════════════ 3 ═══════════════════ -->
+<section class="page-break">
+  <h2><span class="n">3</span> System architecture</h2><div class="h2rule"></div>
+
+  <p class="lead">
+    A layered architecture with modular components inside a single separable core — not
+    distributed microservices. The decision is deliberate and explained in 3.2.
+  </p>
+
+  <div class="layer">
+    <div class="lh"><span class="a">Presentation layer</span><span class="b">user interfaces</span></div>
+    <div class="lb g4">
+      <div class="box"><b>Customer app</b><span class="s">Flutter · Android + iOS</span></div>
+      <div class="box"><b>Provider mode</b><span class="s">inside the same app</span></div>
+      <div class="box"><b>Admin panel</b><span class="s">React + TypeScript</span></div>
+      <div class="box"><b>Marketing site</b><span class="s">Next.js · SSR</span></div>
+    </div>
+  </div>
+  <div class="arrow">▼</div>
+
+  <div class="layer">
+    <div class="lh"><span class="a">Access layer</span><span class="b">gateway and protection</span></div>
+    <div class="lb g5">
+      <div class="box"><b>CDN</b><span class="s">media and files</span></div>
+      <div class="box"><b>WAF</b><span class="s">application firewall</span></div>
+      <div class="box"><b>API gateway</b><span class="s">routing · TLS</span></div>
+      <div class="box"><b>Rate limiter</b><span class="s">abuse prevention</span></div>
+      <div class="box"><b>Auth · JWT</b><span class="s">sessions and devices</span></div>
+    </div>
+  </div>
+  <div class="arrow">▼</div>
+
+  <div class="layer on">
+    <div class="lh"><span class="a">Business layer — functional modules</span><span class="b">modular core</span></div>
+    <div class="lb g4">
+      <div class="box"><b>Identity</b><span class="s">users · roles</span></div>
+      <div class="box"><b>Verification</b><span class="s">documents · tiers</span></div>
+      <div class="box"><b>Catalogue</b><span class="s">categories · fields</span></div>
+      <div class="box"><b>Orders</b><span class="s">state machine</span></div>
+      <div class="box"><b>Dispatch</b><span class="s">scoring engine</span></div>
+      <div class="box"><b>Quotes</b><span class="s">bids · validity</span></div>
+      <div class="box"><b>Finance</b><span class="s">ledger · commission</span></div>
+      <div class="box"><b>Messaging</b><span class="s">realtime</span></div>
+      <div class="box"><b>Ratings</b><span class="s">two-way</span></div>
+      <div class="box"><b>Complaints</b><span class="s">disputes · settlement</span></div>
+      <div class="box"><b>Notifications</b><span class="s">templates · channels</span></div>
+      <div class="box"><b>Reporting</b><span class="s">aggregation · export</span></div>
+    </div>
+  </div>
+  <div class="arrow">▼</div>
+
+  <div class="layer">
+    <div class="lh"><span class="a">Asynchronous processing</span><span class="b">workers and queues</span></div>
+    <div class="lb g5">
+      <div class="box"><b>Job queue</b><span class="s">BullMQ · Redis</span></div>
+      <div class="box"><b>Media processing</b><span class="s">compression · thumbnails</span></div>
+      <div class="box"><b>Notification delivery</b><span class="s">FCM · SMS</span></div>
+      <div class="box"><b>Scheduled jobs</b><span class="s">auto-close · reminders</span></div>
+      <div class="box"><b>Report building</b><span class="s">Excel · PDF</span></div>
+    </div>
+  </div>
+  <div class="arrow">▼</div>
+
+  <div class="layer">
+    <div class="lh"><span class="a">Data and storage</span><span class="b">system state</span></div>
+    <div class="lb g4">
+      <div class="box"><b>PostgreSQL</b><span class="s">primary data</span></div>
+      <div class="box"><b>PostGIS</b><span class="s">geospatial queries</span></div>
+      <div class="box"><b>Redis</b><span class="s">cache · queues</span></div>
+      <div class="box"><b>Object storage</b><span class="s">photos · video · documents</span></div>
+    </div>
+  </div>
+  <div class="arrow">▼</div>
+
+  <div class="layer">
+    <div class="lh"><span class="a">External integrations</span><span class="b">replaceable adapters</span></div>
+    <div class="lb g4">
+      <div class="box"><b>OTP · SMS</b><span class="s">swappable provider</span></div>
+      <div class="box"><b>Payment gateway</b><span class="s">unified interface</span></div>
+      <div class="box"><b>Maps</b><span class="s">location and distance</span></div>
+      <div class="box"><b>Firebase FCM</b><span class="s">push notifications</span></div>
+    </div>
+  </div>
+  <div class="figcap">
+    Figure 1 — The six system layers. The business layer is the modular core; above it are
+    interfaces, below it are infrastructure and integrations that can be replaced without
+    touching business logic.
+  </div>
+
+  <h3>3.1 The replaceable adapter principle</h3>
+  <p>
+    Every external integration sits behind a <strong>single internal interface</strong>.
+    Changing the SMS provider or adding a second payment gateway requires writing a new adapter
+    only, not editing business logic — which serves the "ability to add new payment gateways"
+    requirement directly, and protects the project from being locked to any one vendor.
+  </p>
+
+  <h3>3.2 Why a modular core rather than microservices</h3>
+  <table class="compact">
+    <thead><tr><th style="width:30%">Criterion</th><th>Decision and reasoning</th></tr></thead>
+    <tbody>
+      <tr><td>Financial transaction integrity</td>
+        <td>Holding funds, deducting commission and releasing the provider's balance must occur
+          in a single atomic transaction. Splitting this across microservices imposes complex
+          and risky distributed transactions on a financial system.</td></tr>
+      <tr><td>Team size and delivery time</td>
+        <td>Microservices impose an infrastructure overhead that consumes phase-one budget
+          without delivering value before a large user base exists.</td></tr>
+      <tr><td>Separability later</td>
+        <td>Modules are separated by clear boundaries and internal interfaces, so any module —
+          messaging or notifications, for example — can be extracted as a standalone service
+          when needed, without a rewrite.</td></tr>
+      <tr><td>Horizontal scaling</td>
+        <td>The core is stateless and runs as multiple instances behind a load balancer;
+          asynchronous workers scale independently of the API.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════ 4 ═══════════════════ -->
+<section class="page-break">
+  <h2><span class="n">4</span> Technology stack and the reasoning behind it</h2><div class="h2rule"></div>
+
+  <h3>4.1 Mobile application</h3>
+  <table>
+    <thead><tr><th style="width:22%">Element</th><th style="width:24%">Technology</th><th>Reasoning</th></tr></thead>
+    <tbody>
+      <tr><td>Framework</td><td><strong>Flutter 3.x · Dart</strong></td>
+        <td>The specification asks for <em>a single app</em> running on Android and iOS. One
+          codebase with native performance, mature built-in RTL support, and full control over
+          fonts and their sizing — an explicit requirement for accommodating older users.</td></tr>
+      <tr><td>State management</td><td>Riverpod + Freezed</td>
+        <td>Order state passes through fifteen stages and changes in real time; this needs a
+          strict state model that makes invalid states unrepresentable at the type level.</td></tr>
+      <tr><td>Local storage</td><td>Drift (SQLite) + Secure Storage</td>
+        <td>To meet "the rest of the app must not stop on a weak connection": orders and
+          messages are stored locally and synchronised when the network returns. Sensitive
+          tokens live in encrypted storage.</td></tr>
+      <tr><td>Networking</td><td>Dio + interceptors</td>
+        <td>Automatic retry, token refresh, and an upload queue for media.</td></tr>
+      <tr><td>Maps</td><td>Google Maps SDK</td>
+        <td>Location, manual address selection, distance calculation, coverage display.</td></tr>
+      <tr><td>Realtime</td><td>Socket.IO client</td>
+        <td>Messaging, order status updates and incoming quotes in real time, without battery-
+          draining polling.</td></tr>
+      <tr><td>Media</td><td>image_picker · video_compress</td>
+        <td>Meets "compress photos and video before upload" — compression happens on device.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>4.2 Backend</h3>
+  <table>
+    <thead><tr><th style="width:22%">Element</th><th style="width:24%">Technology</th><th>Reasoning</th></tr></thead>
+    <tbody>
+      <tr><td>Framework</td><td><strong>NestJS · Node.js 22 (TypeScript)</strong></td>
+        <td>A module and dependency-injection structure that translates domain boundaries
+          directly into code, with excellent performance under I/O-heavy load. TypeScript gives
+          type safety shared between the server and the panel.</td></tr>
+      <tr><td>APIs</td><td>REST + OpenAPI 3.1</td>
+        <td>Automatic documentation and client generation — and technical documentation is an
+          explicitly required deliverable.</td></tr>
+      <tr><td>Realtime</td><td>Socket.IO + Redis adapter</td><td>Works across multiple server instances.</td></tr>
+      <tr><td>Queues</td><td>BullMQ on Redis</td>
+        <td>Notifications, media processing and report building run outside the request cycle.</td></tr>
+      <tr><td>Authentication</td><td>JWT + refresh rotation</td>
+        <td>Bounded session length, session revocation and active device management — explicit
+          security requirements.</td></tr>
+      <tr><td>Authorisation</td><td>RBAC + CASL</td>
+        <td>Fine-grained permissions per staff member, and restricted access to financial reports.</td></tr>
+      <tr><td>Validation</td><td>Zod / class-validator</td><td>Strict validation of every input at the API boundary.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>4.3 Data and storage</h3>
+  <table>
+    <thead><tr><th style="width:22%">Element</th><th style="width:24%">Technology</th><th>Reasoning</th></tr></thead>
+    <tbody>
+      <tr><td>Database</td><td><strong>PostgreSQL 16</strong></td>
+        <td>Full ACID transactions — a precondition for the financial system — plus JSONB for
+          dynamic fields and built-in full-text search.</td></tr>
+      <tr><td>Geospatial</td><td><strong>PostGIS</strong></td>
+        <td>For "dispatch by coverage radius" and "distance calculation": spatial indexes answer
+          "who covers this point" in a fraction of a second.</td></tr>
+      <tr><td>Cache</td><td>Redis 7</td>
+        <td>Sessions, provider availability state, rate limiting, queues and event publishing.</td></tr>
+      <tr><td>Media storage</td><td>S3-compatible + CDN</td>
+        <td>Portfolio images, documents and video, with short-lived signed URLs for sensitive
+          documents.</td></tr>
+      <tr><td>Schema migration</td><td>Prisma Migrate</td>
+        <td>Versioned, reviewed migrations, and a test environment matching production.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>4.4 Admin panel and website</h3>
+  <table>
+    <thead><tr><th style="width:22%">Element</th><th style="width:24%">Technology</th><th>Reasoning</th></tr></thead>
+    <tbody>
+      <tr><td>Admin panel</td><td><strong>React 18 + TypeScript + Vite</strong></td>
+        <td>An internal panel needs no search-engine indexing; a single-page app is faster for
+          large tables and filtering.</td></tr>
+      <tr><td>UI library</td><td>MUI (RTL) + TanStack Table</td>
+        <td>Native RTL support, and large tables with server-side pagination and advanced filters.</td></tr>
+      <tr><td>Charts</td><td>Recharts</td><td>The KPI dashboard, growth and geographic distribution.</td></tr>
+      <tr><td>Marketing website</td><td><strong>Next.js (SSR/SSG)</strong></td>
+        <td>For SEO and load speed: server-rendered pages with correct Arabic meta tags.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>4.5 Infrastructure and operations</h3>
+  <table class="compact">
+    <thead><tr><th style="width:22%">Element</th><th style="width:24%">Technology</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>Containers</td><td>Docker + Compose</td><td>Identical environments across development, test and production.</td></tr>
+      <tr><td>Continuous integration</td><td>GitHub Actions</td><td>Automated build, test and deploy with quality gates.</td></tr>
+      <tr><td>Reverse proxy</td><td>Nginx + TLS</td><td>TLS termination, compression, security headers.</td></tr>
+      <tr><td>Error tracking</td><td>Sentry</td><td>Meets "fault monitoring and error logging".</td></tr>
+      <tr><td>Logs and metrics</td><td>Prometheus + Grafana + Loki</td><td>Performance monitoring and alerting.</td></tr>
+      <tr><td>Backups</td><td>Managed snapshots + log archiving</td><td>Daily backups with periodic restore testing.</td></tr>
+      <tr><td>Analytics</td><td>Firebase Analytics</td><td>In-app user behaviour.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════ 5 ═══════════════════ -->
+<section class="page-break">
+  <h2><span class="n">5</span> Data model and database</h2><div class="h2rule"></div>
+
+  <p class="lead">
+    A normalised model that separates <strong>identity</strong> from the
+    <strong>professional profile</strong> from the <strong>financial entry</strong>. That
+    separation is what allows one account with two modes, sound financial auditing, and adding
+    new services without a code change.
+  </p>
+
+  <h3>5.1 Principal table groups</h3>
+  <table class="compact">
+    <thead><tr><th style="width:19%">Group</th><th style="width:37%">Main tables</th><th>Design notes</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Identity and access</strong></td>
+        <td><code>users</code> <code>user_devices</code> <code>sessions</code>
+          <code>otp_challenges</code> <code>roles</code> <code>permissions</code>
+          <code>admin_users</code> <code>audit_log</code></td>
+        <td>A single user record. Roles are separated to allow multiple roles. The audit log
+          records every sensitive administrative action.</td></tr>
+      <tr><td><strong>Professional profile</strong></td>
+        <td><code>provider_profiles</code> <code>provider_documents</code>
+          <code>provider_services</code> <code>provider_coverage</code>
+          <code>provider_schedule</code> <code>portfolio_items</code></td>
+        <td>An optional professional profile attached to the user. Coverage is stored as
+          PostGIS geometry and the schedule as queryable weekly intervals.</td></tr>
+      <tr><td><strong>Catalogue</strong></td>
+        <td><code>categories</code> <code>services</code> <code>service_fields</code>
+          <code>pricing_models</code> <code>service_requirements</code></td>
+        <td><strong>The flexibility pivot:</strong> <code>service_fields</code> defines each
+          service's fields as data rather than code, so a new trade is added from the panel.</td></tr>
+      <tr><td><strong>Locations</strong></td>
+        <td><code>governorates</code> <code>cities</code> <code>districts</code>
+          <code>user_addresses</code> <code>coverage_zones</code></td>
+        <td>A full hierarchy — governorate, city, district, neighbourhood — with travel fees
+          per area.</td></tr>
+      <tr><td><strong>Orders</strong></td>
+        <td><code>orders</code> <code>order_items</code> <code>order_media</code>
+          <code>order_status_history</code> <code>order_extras</code> <code>dispatch_log</code></td>
+        <td>Every state transition is recorded with its timestamp and actor — the basis for the
+          stalled-orders and response-time reports.</td></tr>
+      <tr><td><strong>Quotes</strong></td>
+        <td><code>quotes</code> <code>quote_lines</code> <code>quote_revisions</code></td>
+        <td>A quote carries labour, materials, duration, expected arrival time and validity period.</td></tr>
+      <tr><td><strong>Finance</strong></td>
+        <td><code>ledger_entries</code> <code>wallets</code> <code>payments</code>
+          <code>refunds</code> <code>commission_rules</code> <code>payouts</code>
+          <code>invoices</code></td>
+        <td>An immutable double-entry ledger. Any correction is posted as a reversing entry
+          rather than by editing the record.</td></tr>
+      <tr><td><strong>Communication</strong></td>
+        <td><code>conversations</code> <code>messages</code> <code>message_flags</code>
+          <code>notifications</code> <code>notification_templates</code></td>
+        <td>Conversations are tied to the order and retained as evidence in disputes.</td></tr>
+      <tr><td><strong>Quality</strong></td>
+        <td><code>reviews</code> <code>review_criteria</code> <code>complaints</code>
+          <code>complaint_messages</code> <code>disputes</code></td>
+        <td>Two-way ratings restricted to a genuinely completed order, one per party per order.</td></tr>
+      <tr><td><strong>Content</strong></td>
+        <td><code>banners</code> <code>pages</code> <code>faqs</code> <code>settings</code></td>
+        <td>Content editable from the panel without publishing a new release.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>5.2 The architectural key — dynamic service fields</h3>
+  <p>
+    The hardest requirement in the specification is that the operator can add new services
+    <strong>without a programming change</strong>. The answer is to define each service's order
+    form as data:
+  </p>
+  <div class="cards c3">
+    <div class="card"><div class="h">Field definition</div>
+      <div class="b">For each service the operator defines its fields: type (text, number,
+        choice, image, date), whether it is mandatory, its permitted values, and display order.</div></div>
+    <div class="card"><div class="h">Automatic rendering</div>
+      <div class="b">The app builds the order screen from that definition at runtime, so a new
+        service appears with the correct form without an app store update.</div></div>
+    <div class="card"><div class="h">Flexible but indexed</div>
+      <div class="b">Answers are stored in an indexed JSONB column, so they remain searchable,
+        filterable and reportable despite the flexibility.</div></div>
+  </div>
+
+  <div class="note">
+    <span class="t">What this means in practice</span>
+    Adding a new trade — "curtains and upholstery technician", say — with its own fields,
+    pricing model, required documents, commission and coverage areas is done
+    <strong>from the admin panel in minutes</strong>, with no new app release and no waiting
+    for store review.
+  </div>
+
+  <h3>5.3 Data policies</h3>
+  <ul>
+    <li><strong>Soft deletion</strong> for every record tied to a financial transaction or a dispute, to preserve auditability.</li>
+    <li><strong>Column-level encryption</strong> for identity numbers and financial data.</li>
+    <li><strong>Document isolation</strong> in dedicated storage behind short-lived signed URLs, reachable only by an authorised staff member, with every access recorded in the audit log.</li>
+    <li><strong>Deletion on request</strong> under the privacy policy, anonymising financial entries rather than deleting them, so the books stay sound.</li>
+  </ul>
+</section>
+
+<!-- ═══════════════════ 6 ═══════════════════ -->
+<section class="page-break">
+  <h2><span class="n">6</span> Matching and dispatch engine</h2><div class="h2rule"></div>
+
+  <p class="lead">
+    The specification sets out ten criteria for dispatching an order. We implement them as a
+    scoring engine whose weights are <strong>tunable from the admin panel</strong>, not fixed
+    in code.
+  </p>
+
+  <h3>6.1 Engine stages</h3>
+  <div class="steps">
+    <div class="step"><div class="n">1</div><div>
+      <div class="t">Hard filtering</div>
+      <div class="d">Accounts failing a mandatory condition are excluded outright: mismatched
+        specialisation, location outside the coverage radius, unverified or suspended account,
+        outside declared working hours, or availability toggled off. This runs as a single
+        PostGIS query against a spatial index.</div></div></div>
+    <div class="step"><div class="n">2</div><div>
+      <div class="t">Weighted scoring</div>
+      <div class="d">Each remaining candidate is scored against the soft criteria in the table
+        below. Weights are set from the panel and tested before being adopted.</div></div></div>
+    <div class="step"><div class="n">3</div><div>
+      <div class="t">Staged fan-out</div>
+      <div class="d">The order goes first to the highest-scoring tier; if not enough quotes
+        arrive within a set window, the circle widens automatically. This rewards the best
+        performers without leaving a customer's order without quotes.</div></div></div>
+    <div class="step"><div class="n">4</div><div>
+      <div class="t">Throttling</div>
+      <div class="d">A cap on orders sent to a provider per period, and a cap on quotes per
+        order — protecting quote quality and the customer's experience.</div></div></div>
+    <div class="step"><div class="n">5</div><div>
+      <div class="t">Verification and subscription gating</div>
+      <div class="d">Verification tier and subscription plan affect priority and the monthly
+        quota of quotes, supporting the revenue model later without a code change.</div></div></div>
+  </div>
+
+  <h3>6.2 Scoring criteria and default weights</h3>
+  <table>
+    <thead><tr><th style="width:30%">Criterion</th><th class="mid" style="width:16%">Initial weight</th><th>How it is calculated</th></tr></thead>
+    <tbody>
+      <tr><td>Geographic proximity</td><td class="mid">20%</td><td>Linear decay with distance within the declared coverage radius.</td></tr>
+      <tr><td>Overall rating</td><td class="mid">20%</td><td>Weighted average giving greater weight to recent ratings.</td></tr>
+      <tr><td>Response speed</td><td class="mid">15%</td><td>Median time from order receipt to quote submission over the last thirty days.</td></tr>
+      <tr><td>Completed orders</td><td class="mid">12%</td><td>Logarithmic scaling to prevent incumbents monopolising dispatch.</td></tr>
+      <tr><td>Verification tier</td><td class="mid">12%</td><td>Registered ‹ verified ‹ verified company.</td></tr>
+      <tr><td>Order acceptance rate</td><td class="mid">8%</td><td>Accepted ÷ dispatched, above a minimum sample size.</td></tr>
+      <tr><td>Punctuality</td><td class="mid">7%</td><td>Share of arrivals within the quoted arrival window.</td></tr>
+      <tr><td>Availability at the requested time</td><td class="mid">6%</td><td>Declared schedule against the requested service time.</td></tr>
+      <tr><td>Years of experience</td><td class="mid">6%</td><td>A supporting factor with a defined ceiling.</td></tr>
+      <tr><td>Cancellation rate</td><td class="mid">−6%</td><td>A penalty for provider-side cancellations.</td></tr>
+    </tbody>
+  </table>
+  <p class="tnote">
+    These weights are initial and will be confirmed with the project owner during the analysis
+    phase. They remain adjustable from the admin panel at any time without a new release.
+  </p>
+
+  <div class="note warn">
+    <span class="t">An explicit requirement, addressed</span>
+    The specification warns that subjecting every order to manual approval delays urgent work.
+    An order is therefore published <strong>automatically</strong> once it passes automated
+    checks — data completeness, location validity, prohibited content screening, banned
+    keywords, duplicate detection and account eligibility — and only what the rules classify as
+    <strong>suspicious</strong> is routed to manual review.
+  </div>
+</section>
+
+<!-- ═══════════════════ 7 ═══════════════════ -->
+<section class="page-break">
+  <h2><span class="n">7</span> Order lifecycle and pricing models</h2><div class="h2rule"></div>
+
+  <h3>7.1 The order state machine</h3>
+  <p>
+    The fifteen states are implemented as an explicit state machine: every transition has a
+    condition and an authorised actor, and is recorded in <code>order_status_history</code>.
+    Disallowed transitions are rejected at the system level, not merely hidden in the interface.
+  </p>
+  <div class="states">
+    <span class="st">New order</span><span class="st">Awaiting quotes</span>
+    <span class="st">Quotes received</span><span class="st">Provider selected</span>
+    <span class="st">Awaiting payment or confirmation</span><span class="st">Provider en route</span>
+    <span class="st">Provider arrived</span><span class="st">In progress</span>
+    <span class="st w">Awaiting customer approval of extra work</span>
+    <span class="st">Service completed</span><span class="st">Awaiting customer confirmation</span>
+    <span class="st t">Complete</span><span class="st t">Cancelled</span>
+    <span class="st w">Stalled</span><span class="st w">Under dispute</span>
+    <span class="st t">Refunded in full or in part</span>
+  </div>
+
+  <h3>7.2 The seven stages of an order</h3>
+  <table class="compact">
+    <thead><tr><th style="width:7%" class="mid">#</th><th style="width:20%">Stage</th><th>What the system does</th></tr></thead>
+    <tbody>
+      <tr><td class="mid"><strong>1</strong></td><td>Order creation</td>
+        <td>Category and service selection, a short title, a description of the problem, photo
+          and video attachments, service address and map location, timing (now / today / a later
+          slot), urgency level, an optional indicative budget, and preferred payment method.</td></tr>
+      <tr><td class="mid"><strong>2</strong></td><td>Order screening</td>
+        <td>Automated checks on data completeness, location validity, service type, prohibited
+          content, banned keywords, duplicates and account eligibility. Publication is automatic;
+          only suspicious orders go to manual review.</td></tr>
+      <tr><td class="mid"><strong>3</strong></td><td>Dispatch</td>
+        <td>The matching engine (section 6) routes the order across staged tiers.</td></tr>
+      <tr><td class="mid"><strong>4</strong></td><td>Quotes</td>
+        <td>Proposed price, labour charges, materials cost, duration, expected arrival time,
+          quote validity period, conditions, notes and attachments.</td></tr>
+      <tr><td class="mid"><strong>5</strong></td><td>Selection</td>
+        <td>The customer compares quotes — name, photo, verification badge, rating, jobs
+          completed, experience, price, arrival time, duration. On selection, quoting closes,
+          the chosen provider is notified, and the others are told the competition has ended.</td></tr>
+      <tr><td class="mid"><strong>6</strong></td><td>Execution</td>
+        <td>State progression, additional work or materials only with prior customer approval,
+          and live status updates on both sides.</td></tr>
+      <tr><td class="mid"><strong>7</strong></td><td>Completion</td>
+        <td>The provider marks the service complete and uploads after photos; the customer is
+          notified and confirms; commission is deducted and the balance released; both parties
+          are asked to rate. If the customer does not respond within a window set by the
+          operator, the order closes automatically after a status review.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>7.3 The six pricing models</h3>
+  <p>
+    The specification notes that services cannot all be priced the same way. Each model is
+    implemented as an independent strategy, bound to a service from the admin panel:
+  </p>
+  <table>
+    <thead><tr><th style="width:20%">Model</th><th style="width:33%">Used for</th><th>Behaviour in the system</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Fixed price</strong></td><td>Tyre inflation, tyre change, air-conditioner cleaning, light fitting, car wash, inspection visit.</td>
+        <td>The base price is shown before ordering; the quoting stage is skipped and the order is assigned directly.</td></tr>
+      <tr><td><strong>Quotation</strong></td><td>House painting, furniture moving, leak repair, appliance repair, carpentry and metalwork.</td>
+        <td>The full cycle: details and photos → competing quotes → selection.</td></tr>
+      <tr><td><strong>Inspection</strong></td><td>Work that cannot be estimated remotely.</td>
+        <td>An inspection visit fee is paid first — and deducted from the job value — then a
+          final price is submitted after inspection and approved inside the same order.</td></tr>
+      <tr><td><strong>Hourly</strong></td><td>Hourly labour and open-ended work.</td>
+        <td>Total = hours × number of workers × hourly rate, with start and end times recorded.</td></tr>
+      <tr><td><strong>Emergency</strong></td><td>Urgent faults.</td>
+        <td>Dispatched to providers available right now within a tight radius, with an urgency
+          surcharge set by the system or the provider under platform policy.</td></tr>
+      <tr><td><strong>Direct request</strong></td><td>Ordering from a specific provider's page, or repeating a past order.</td>
+        <td>Bypasses dispatch and goes to the named provider, with the timing, address or
+          details editable.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════ 8 ═══════════════════ -->
+<section class="page-break">
+  <h2><span class="n">8</span> Payments, wallet and commission</h2><div class="h2rule"></div>
+
+  <div class="note dark">
+    <span class="t">The governing principle of the financial layer</span>
+    Every movement of money is an <strong>entry in an immutable ledger</strong>. Balances are
+    computed from the sum of entries rather than stored in a single field, and no entry is
+    edited after posting — corrections are made by reversing entry. This is a precondition for
+    auditable financial reporting and for resolving disputes.
+  </div>
+
+  <h3>8.1 Supported payment methods</h3>
+  <table class="compact">
+    <thead><tr><th style="width:34%">Method</th><th style="width:16%" class="mid">Phase</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Cash on completion</td><td class="mid"><span class="tag g">Phase 1</span></td>
+        <td>Commission is posted as a debt against the provider, settled from later balances.</td></tr>
+      <tr><td>Electronic payment via one gateway</td><td class="mid"><span class="tag g">Phase 1</span></td>
+        <td>The gateway is chosen with the project owner; the integration is priced separately.</td></tr>
+      <tr><td>Electronic wallet and balance</td><td class="mid"><span class="tag y">Phase 2</span></td>
+        <td>The ledger foundation ships in phase one; the user-facing surface is added later.</td></tr>
+      <tr><td>Escrow hold</td><td class="mid"><span class="tag y">Phase 2</span></td>
+        <td>Detailed in 8.2; requires a gateway supporting hold and release.</td></tr>
+      <tr><td>Partial or full prepayment</td><td class="mid"><span class="tag y">Phase 2</span></td>
+        <td>Built on the wallet and the escrow hold.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>8.2 The escrow cycle</h3>
+  <div class="steps">
+    <div class="step"><div class="n">1</div><div><div class="t">Payment</div>
+      <div class="d">The customer pays the service value electronically after accepting a quote.</div></div></div>
+    <div class="step"><div class="n">2</div><div><div class="t">Hold</div>
+      <div class="d">The amount is posted to the platform's trust account and not transferred to
+        the provider; it appears to them as a "held balance".</div></div></div>
+    <div class="step"><div class="n">3</div><div><div class="t">Confirmation</div>
+      <div class="d">The customer confirms completion, or the order closes automatically after
+        the defined window.</div></div></div>
+    <div class="step"><div class="n">4</div><div><div class="t">Settlement</div>
+      <div class="d">Platform commission is deducted by entry and the net added to the
+        provider's available balance by matching entry.</div></div></div>
+    <div class="step"><div class="n">5</div><div><div class="t">Withdrawal</div>
+      <div class="d">The provider requests a withdrawal; the operator reviews it and the
+        transfer is executed and posted.</div></div></div>
+  </div>
+
+  <h3>8.3 The commission engine</h3>
+  <p>
+    The specification states explicitly: <strong>the commission rate must not be hard-coded; it
+    must be managed from the admin panel</strong>. We implement this as a prioritised rule
+    table, applying the most specific matching rule:
+  </p>
+  <table class="compact">
+    <thead><tr><th style="width:32%">Rule dimension</th><th style="width:26%">Value types</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td>Service type</td><td rowspan="7">Percentage<br>Fixed amount<br>Percentage with a floor<br>Percentage with a cap<br>Percentage with both</td>
+        <td>12% on cleaning services</td></tr>
+      <tr><td>Governorate</td><td>10% in a newly launched governorate</td></tr>
+      <tr><td>Provider</td><td>8% for a contracted premium account</td></tr>
+      <tr><td>Company</td><td>A negotiated rate for companies</td></tr>
+      <tr><td>Subscription plan</td><td>Lower commission on paid plans</td></tr>
+      <tr><td>Promotion</td><td>0% on the first three orders</td></tr>
+      <tr><td>Payment method</td><td>A differential offsetting gateway fees</td></tr>
+    </tbody>
+  </table>
+
+  <h3>8.4 Additional costs during execution</h3>
+  <p>
+    No additional work begins without the customer's explicit approval. The order moves to
+    <em>"Awaiting customer approval of extra work"</em> and no increase is counted until
+    approval. The provider adds a line with its reason and value, the customer is notified, and
+    on approval the value is added to the order total and commission is recalculated on the new
+    total.
+  </p>
+
+  <h3>8.5 The electronic invoice</h3>
+  <div class="pills">
+    <span class="pill">Order number</span><span class="pill">Customer details</span>
+    <span class="pill">Provider details</span><span class="pill">Service description</span>
+    <span class="pill">Base price</span><span class="pill">Materials</span>
+    <span class="pill">Extras</span><span class="pill">Discounts</span>
+    <span class="pill">Commission</span><span class="pill">Taxes and fees</span>
+    <span class="pill">Payment method</span><span class="pill">Payment status</span>
+  </div>
+
+  <h3>8.6 Cancellation and refunds</h3>
+  <p>The cancellation policy is a <strong>manageable matrix</strong>: for each cancellation case and each service type, the financial outcome is set from the panel.</p>
+  <table class="compact">
+    <thead><tr><th style="width:44%">Cancellation case</th><th>Configurable outcomes</th></tr></thead>
+    <tbody>
+      <tr><td>Before any quote is accepted</td><td rowspan="8">Cancellation fee · visit compensation ·
+        partial deduction · full refund · partial refund — the operator sets the rule for each
+        intersection of case and service type.</td></tr>
+      <tr><td>After a quote is accepted</td></tr>
+      <tr><td>Before the provider sets off</td></tr>
+      <tr><td>After the provider sets off</td></tr>
+      <tr><td>After arrival</td></tr>
+      <tr><td>During execution</td></tr>
+      <tr><td>Customer no-show</td></tr>
+      <tr><td>Provider no-show</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════ 9 · 10 ═══════════════════ -->
+<section class="page-break">
+  <h2><span class="n">9</span> In-app messaging and notifications</h2><div class="h2rule"></div>
+
+  <h3>9.1 In-app messaging</h3>
+  <div class="cards c2">
+    <div class="card"><div class="h">Capabilities</div><div class="b"><ul>
+      <li>Instant text messages over WebSocket</li>
+      <li>Sending images and locations</li>
+      <li>Voice notes — optional, subject to approval</li>
+      <li>Sending an updated quote inside the conversation</li>
+      <li>Message delivery and read notifications</li>
+      <li>Conversations retained against the order</li></ul></div></div>
+    <div class="card fill"><div class="h">Required controls</div><div class="b"><ul>
+      <li><strong>Phone number blocking</strong> before a quote is accepted — a pattern filter
+        that catches numbers written as digits, words or with separators</li>
+      <li>Reporting abusive messages, with escalation to the operator</li>
+      <li>Revealing the number after acceptance, or keeping contact inside the app —
+        <strong>controlled by a setting</strong> the operator chooses</li>
+      <li>Conversations are admissible evidence in disputes</li></ul></div></div>
+  </div>
+
+  <h3>9.2 The notification system</h3>
+  <p>
+    A <strong>template and event</strong> driven engine: every system event fires a template,
+    and the template determines the channels and content. Templates are edited from the panel
+    without a release.
+  </p>
+  <table class="compact">
+    <thead><tr><th style="width:26%">Channel</th><th style="width:16%" class="mid">Phase</th><th>Use</th></tr></thead>
+    <tbody>
+      <tr><td>In-app notifications</td><td class="mid"><span class="tag g">Phase 1</span></td><td>A notification centre with read state.</td></tr>
+      <tr><td>Push notifications</td><td class="mid"><span class="tag g">Phase 1</span></td><td>The primary channel for real-time events, via FCM.</td></tr>
+      <tr><td>SMS</td><td class="mid"><span class="tag g">Phase 1</span></td><td>OTP codes and critical events only.</td></tr>
+      <tr><td>Email</td><td class="mid"><span class="tag g">Phase 1</span></td><td>Invoices, reports and administrative alerts.</td></tr>
+      <tr><td>WhatsApp Business</td><td class="mid"><span class="tag n">Optional</span></td><td>Priced separately, subject to service availability.</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Notification-triggering events</h4>
+  <ul class="cols3 small">
+    <li>Login code</li><li>Provider approved</li><li>Verification rejected</li>
+    <li>New service order received</li><li>Quote received</li><li>Quote accepted</li>
+    <li>Quote rejected</li><li>Order cancelled</li><li>Provider set off</li>
+    <li>Provider arrived</li><li>Work started</li><li>Approval of extra cost</li>
+    <li>Service completed</li><li>Payment confirmed</li><li>Refund issued</li>
+    <li>Message received</li><li>Complaint opened</li><li>Complaint updated</li>
+    <li>Rating requested</li><li>Offers and discounts</li><li>Subscription expiry</li>
+    <li>Account suspended or reactivated</li>
+  </ul>
+
+  <div class="note">
+    <span class="t">User control</span>
+    The system separates <strong>operational notifications</strong> — which cannot be switched
+    off because they are part of the service — from <strong>marketing notifications</strong>,
+    which the user controls from their settings, as the specification explicitly requires.
+  </div>
+
+  <h2 style="margin-top:11mm"><span class="n">10</span> Search, filtering and Arabic text handling</h2><div class="h2rule"></div>
+
+  <p class="lead">
+    The specification requires search in Arabic that handles minor spelling variation. This is
+    not a peripheral feature — it is the difference between a user finding a service and
+    leaving the app.
+  </p>
+
+  <h3>10.1 The Arabic normalisation layer</h3>
+  <table class="compact">
+    <thead><tr><th style="width:28%">Treatment</th><th style="width:26%">Example</th><th>Effect</th></tr></thead>
+    <tbody>
+      <tr><td>Hamza normalisation</td><td>أ / إ / آ → ا</td><td>"إصلاح" and "اصلاح" return the same results.</td></tr>
+      <tr><td>Taa marbuta normalisation</td><td>ة → ه</td><td>"سباكة" and "سباكه".</td></tr>
+      <tr><td>Alif maqsura normalisation</td><td>ى → ي</td><td>"مبنى" and "مبني".</td></tr>
+      <tr><td>Stripping diacritics and tatweel</td><td>vowel marks and kashida</td><td>Ignored in matching.</td></tr>
+      <tr><td>Digit normalisation</td><td>٠١٢٣ → 0123</td><td>Search works with Arabic and Latin digits alike.</td></tr>
+      <tr><td>Typo tolerance</td><td>Trigram similarity</td><td>"كهربائي" matches "كهربجي" by trigram similarity.</td></tr>
+      <tr><td>Synonyms</td><td>"مكيّف" ≡ "إسبليت"</td><td>A synonym dictionary editable from the panel.</td></tr>
+    </tbody>
+  </table>
+  <p class="tnote">
+    Implemented with <code>unaccent</code> and <code>pg_trgm</code> in PostgreSQL against an
+    indexed normalised column — no external search engine is needed in phase one.
+  </p>
+
+  <h3>10.2 Filters available to the customer</h3>
+  <div class="pills">
+    <span class="pill">Service name</span><span class="pill">Category</span><span class="pill">Governorate</span>
+    <span class="pill">City</span><span class="pill">District</span><span class="pill">Distance</span>
+    <span class="pill">Rating</span><span class="pill">Price</span><span class="pill">Verification tier</span>
+    <span class="pill">Arrival speed</span><span class="pill">Available now</span><span class="pill">Companies only</span>
+    <span class="pill">Individuals only</span><span class="pill">Emergency service</span>
+    <span class="pill">Fixed price</span><span class="pill">Favourites</span>
+  </div>
+</section>
+
+<!-- ═══════════════════ 11 · 12 ═══════════════════ -->
+<section class="page-break">
+  <h2><span class="n">11</span> Maps and location</h2><div class="h2rule"></div>
+  <table class="compact">
+    <thead><tr><th style="width:36%">Function</th><th style="width:16%" class="mid">Phase</th><th>Implementation</th></tr></thead>
+    <tbody>
+      <tr><td>Automatic customer location, with consent</td><td class="mid"><span class="tag g">Phase 1</span></td><td>Explicit permissions with a stated reason.</td></tr>
+      <tr><td>Manual location selection on the map</td><td class="mid"><span class="tag g">Phase 1</span></td><td>A draggable pin with reverse geocoding.</td></tr>
+      <tr><td>Multiple saved addresses</td><td class="mid"><span class="tag g">Phase 1</span></td><td>Home, work, parents' home, a family member's home, car location.</td></tr>
+      <tr><td>Distance calculation between parties</td><td class="mid"><span class="tag g">Phase 1</span></td><td>PostGIS for filtering, the maps API for real arrival time.</td></tr>
+      <tr><td>Dispatch by coverage radius</td><td class="mid"><span class="tag g">Phase 1</span></td><td>Coverage geometry per provider on a spatial index.</td></tr>
+      <tr><td>Approximate arrival time</td><td class="mid"><span class="tag g">Phase 1</span></td><td>From the routing API with caching to reduce consumption.</td></tr>
+      <tr><td>Operating areas set from the panel</td><td class="mid"><span class="tag g">Phase 1</span></td><td>Enable or disable any area, or any service within an area.</td></tr>
+      <tr><td>Live provider tracking once en route</td><td class="mid"><span class="tag y">Phase 2</span></td><td>Periodic location broadcast with privacy controls and automatic stop on arrival.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note warn">
+    <span class="t">A privacy control written into the specification</span>
+    <strong>The provider's precise location is not shown before the order is accepted</strong>,
+    and full personal contact details are not shown before they accept. Until then only an
+    approximate area and a distance band are displayed — never coordinates.
+  </div>
+
+  <h2 style="margin-top:11mm"><span class="n">12</span> Visual identity and design system</h2><div class="h2rule"></div>
+
+  <p class="lead">
+    The design system was approved as part of the interactive prototype of the customer
+    journey, and is the binding visual reference for development. Its core tokens follow.
+  </p>
+
+  <h3>12.1 Colour palette</h3>
+  <div class="sw">
+    <div class="c"><div class="chip" style="background:#147D73"></div>
+      <div class="lb"><b>Primary</b><span>#147D73</span></div></div>
+    <div class="c"><div class="chip" style="background:#0F5F58"></div>
+      <div class="lb"><b>Primary dark</b><span>#0F5F58</span></div></div>
+    <div class="c"><div class="chip" style="background:#0B1F2E"></div>
+      <div class="lb"><b>Deep ink</b><span>#0B1F2E</span></div></div>
+    <div class="c"><div class="chip" style="background:#E6F2F1"></div>
+      <div class="lb"><b>Light tint</b><span>#E6F2F1</span></div></div>
+    <div class="c"><div class="chip" style="background:#F4B740"></div>
+      <div class="lb"><b>Alert</b><span>#F4B740</span></div></div>
+    <div class="c"><div class="chip" style="background:#12734B"></div>
+      <div class="lb"><b>Success</b><span>#12734B</span></div></div>
+  </div>
+
+  <h3>12.2 Typography and sizing</h3>
+  <table class="compact">
+    <thead><tr><th style="width:26%">Element</th><th style="width:26%">Value</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td>Interface typeface</td><td><strong>Tajawal</strong></td><td>A clear geometric Arabic face supporting weights from Light to Black.</td></tr>
+      <tr><td>Companion Latin face</td><td>Inter</td><td>For Latin numerals and technical terms.</td></tr>
+      <tr><td>Base text size</td><td>16 pt minimum</td><td>To accommodate older users.</td></tr>
+      <tr><td>Touch targets</td><td>48 pt minimum</td><td>Reduces mis-taps.</td></tr>
+      <tr><td>Contrast</td><td>WCAG AA</td><td>Verified across every text and background combination.</td></tr>
+      <tr><td>Reference screen size</td><td>390 × 844</td><td>With a responsive layout from 4.7" to tablets.</td></tr>
+      <tr><td>Numerals</td><td>Arabic-Indic ٠١٢٣</td><td>With search and input supported in both forms.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>12.3 Grammatical gender</h3>
+  <div class="note">
+    <span class="t">A linguistic detail settled in the prototype</span>
+    Interface copy is written in the <strong>masculine</strong> form by default and switches
+    automatically to the <strong>feminine</strong> form when the account's gender is female.
+    This requires strings to be stored in two forms in the translation files rather than one —
+    which has been accounted for in the internationalisation structure since design.
+  </div>
+</section>
+
+<!-- ═══════════════════ 13 ═══════════════════ -->
+<section class="page-break">
+  <h2><span class="n">13</span> Mobile app — the customer journey</h2><div class="h2rule"></div>
+
+  <p class="lead">
+    Fifteen screens covering the complete customer journey, from sign-in to rating. The screens
+    below are from the approved interactive prototype and are the binding visual reference for
+    development.
+  </p>
+
+  <div class="shots">
+    <div class="shot"><img src="../assets/screens/01-login.png" alt="">
+      <div class="cap"><b>01 · Sign-in and language</b>Language chosen before any step</div></div>
+    <div class="shot"><img src="../assets/screens/02-phone.png" alt="">
+      <div class="cap"><b>02 · Phone number</b>Entry and code dispatch</div></div>
+    <div class="shot"><img src="../assets/screens/03-otp.png" alt="">
+      <div class="cap"><b>03 · Verification code</b>Resend timer</div></div>
+    <div class="shot"><img src="../assets/screens/04-profile.png" alt="">
+      <div class="cap"><b>04 · Details and permissions</b>Location and notifications</div></div>
+  </div>
+  <div class="shots">
+    <div class="shot"><img src="../assets/screens/05-home.png" alt="">
+      <div class="cap"><b>05 · Home</b>Categories and emergency service</div></div>
+    <div class="shot"><img src="../assets/screens/06-categories.png" alt="">
+      <div class="cap"><b>06 · Categories and service</b>Browsing and service detail</div></div>
+    <div class="shot"><img src="../assets/screens/07-wizard.png" alt="">
+      <div class="cap"><b>07 · Order wizard</b>Description, photos and timing</div></div>
+    <div class="shot"><img src="../assets/screens/08-waiting.png" alt="">
+      <div class="cap"><b>08 · Awaiting quotes</b>Dispatch status</div></div>
+  </div>
+  <div class="shots">
+    <div class="shot"><img src="../assets/screens/09-quotes.png" alt="">
+      <div class="cap"><b>09 · Quotes and comparison</b>Comparing providers</div></div>
+    <div class="shot"><img src="../assets/screens/10-tracking.png" alt="">
+      <div class="cap"><b>10 · Execution tracking</b>Order state progression</div></div>
+    <div class="shot"><img src="../assets/screens/11-chat.png" alt="">
+      <div class="cap"><b>11 · Messaging</b>Communication within the order</div></div>
+    <div class="shot"><img src="../assets/screens/12-invoice.png" alt="">
+      <div class="cap"><b>12 · Invoice</b>Line items and commission</div></div>
+  </div>
+  <div class="shots">
+    <div class="shot"><img src="../assets/screens/13-review.png" alt="">
+      <div class="cap"><b>13 · Rating</b>Multi-criteria rating</div></div>
+    <div class="shot"><img src="../assets/screens/14-orders.png" alt="">
+      <div class="cap"><b>14 · My orders</b>History and reordering</div></div>
+    <div class="shot"><img src="../assets/screens/15-account.png" alt="">
+      <div class="cap"><b>15 · My account</b>Addresses and settings</div></div>
+    <div class="shot" style="display:flex;align-items:center;">
+      <div class="card fill" style="width:100%"><div class="h">The interactive prototype</div>
+        <div class="b">The prototype is browsable screen by screen and simulates provider-side
+          events to drive the order state — and it is what was approved before this proposal was
+          written.</div></div></div>
+  </div>
+  <div class="figcap">
+    Figure 2 — The complete phase-one customer journey. Screens are taken from the approved
+    interactive prototype at a 390 × 844 reference size.
+  </div>
+</section>
+
+<!-- ═══════════════════ 14 · 15 ═══════════════════ -->
+<section class="page-break">
+  <h2><span class="n">14</span> Provider mode and provider dashboard</h2><div class="h2rule"></div>
+
+  <h3>14.1 Onboarding and verification</h3>
+  <p>The four verification tiers as set out in the specification, with a verification badge shown against verified accounts:</p>
+  <div class="steps">
+    <div class="step"><div class="n">A</div><div><div class="t">Account under review</div>
+      <div class="d">Cannot receive orders until reviewed.</div></div></div>
+    <div class="step"><div class="n">B</div><div><div class="t">Registered provider</div>
+      <div class="d">Core details have been reviewed.</div></div></div>
+    <div class="step"><div class="n">C</div><div><div class="t">Verified provider</div>
+      <div class="d">Identity and professional documents confirmed.</div></div></div>
+    <div class="step"><div class="n">D</div><div><div class="t">Verified service company</div>
+      <div class="d">Commercial registration and company details confirmed — <span class="tag y">Phase 2</span></div></div></div>
+  </div>
+
+  <h3>14.2 Provider dashboard sections</h3>
+  <table class="compact">
+    <thead><tr><th style="width:20%">Section</th><th>Contents</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Home</strong></td><td>Account status · verification status · rating · new, active and completed orders ·
+        revenue · available balance · commission · response speed · acceptance rate · cancellation rate · key alerts</td></tr>
+      <tr><td><strong>Orders</strong></td><td>Available · quoted · accepted · active · completed · cancelled · stalled</td></tr>
+      <tr><td><strong>Quotes</strong></td><td>Create · edit · withdraw · quote status · expiry date</td></tr>
+      <tr><td><strong>Services</strong></td><td>Add · edit · disable · pricing model · starting price · coverage areas</td></tr>
+      <tr><td><strong>Portfolio</strong></td><td>Add photos, video and descriptions · link work to a service type · delete or edit</td></tr>
+      <tr><td><strong>Wallet</strong></td><td>Available balance · held balance · earnings · commissions · withdrawal requests · transaction log · invoices</td></tr>
+      <tr><td><strong>Ratings</strong></td><td>Average · detail · replying to a rating · reporting an abusive rating</td></tr>
+      <tr><td><strong>Settings</strong></td><td>Personal details · working hours · coverage areas · availability · notifications · language · privacy · change phone number</td></tr>
+    </tbody>
+  </table>
+
+  <h2 style="margin-top:11mm"><span class="n">15</span> Admin panel and permissions</h2><div class="h2rule"></div>
+  <table class="compact">
+    <thead><tr><th style="width:22%">Module</th><th>Principal capabilities</th></tr></thead>
+    <tbody>
+      <tr><td><strong>KPI dashboard</strong></td><td>Total customers, providers and verified providers · new, completed, cancelled
+        and stalled orders · total order value · total commission · amounts owed · open complaints · average rating ·
+        most requested services · most active areas · user and order growth</td></tr>
+      <tr><td><strong>Users</strong></td><td>Search · details, order history, ratings and complaints · activate · suspend · ban ·
+        send a notification · edit subject to permissions · active devices and sessions</td></tr>
+      <tr><td><strong>Providers</strong></td><td>Join requests · document review · approve or reject · request further documents ·
+        verification status · specialisations · portfolio review · disable a specialisation · performance monitoring ·
+        subscriptions · commission rates · balances</td></tr>
+      <tr><td><strong>Orders</strong></td><td>View all · search and filter · details, quotes and parties · change state where
+        necessary · manual assignment · cancel · reopen · change log · overdue order tracking</td></tr>
+      <tr><td><strong>Services and categories</strong></td><td>Main and sub categories · add a service · icon and image · pricing model ·
+        required fields · required documents · commission · minimum price · emergency availability · enable and disable · display order</td></tr>
+      <tr><td><strong>Areas</strong></td><td>Governorates · cities · districts · neighbourhoods · coverage areas · travel fees ·
+        services available in each area</td></tr>
+      <tr><td><strong>Payments</strong></td><td>Successful and failed · held · refunds · amounts owed · withdrawal requests ·
+        commissions · settlements · invoices · financial reports</td></tr>
+      <tr><td><strong>Complaints</strong></td><td>Intake · priority · assignment · corresponding with the parties · attachments ·
+        suspending a payment · recording the decision · closure · complaints report</td></tr>
+      <tr><td><strong>Content</strong></td><td>Slider · banners · information pages · FAQ · terms · privacy · tips · announcements ·
+        app messages · contact details · social links</td></tr>
+      <tr><td><strong>Notifications</strong></td><td>Send to one user or a group · by area, account type or service · scheduling · message templates</td></tr>
+      <tr><td><strong>Staff</strong></td><td>Add a staff member · create a role · set permissions · restrict financial reports ·
+        log every action · suspend or remove permissions</td></tr>
+    </tbody>
+  </table>
+
+  <h3>15.1 Pre-configured administrative roles</h3>
+  <div class="pills">
+    <span class="pill on">System administrator</span><span class="pill">General manager</span>
+    <span class="pill">Provider approvals</span><span class="pill">Customer service</span>
+    <span class="pill">Order monitoring</span><span class="pill">Complaints</span>
+    <span class="pill">Accounting</span><span class="pill">Content management</span>
+    <span class="pill">Quality</span><span class="pill">Reporting</span>
+  </div>
+  <p class="small">
+    These roles are ready-made templates, and each staff member's permissions remain
+    individually definable from within the panel. Every administrative action is recorded in an
+    immutable audit log capturing the actor, the timestamp, and the value before and after the
+    change.
+  </p>
+</section>
+
+<!-- ═══════════════════ 16 · 17 · 18 ═══════════════════ -->
+<section class="page-break">
+  <h2><span class="n">16</span> Reporting and export engine</h2><div class="h2rule"></div>
+  <p>
+    Twenty-four reports, all <strong>viewable, filterable and exportable to Excel and PDF</strong>.
+    Heavy reports are built in asynchronous jobs and the user is notified when they are ready,
+    so the panel is never blocked.
+  </p>
+  <ul class="cols3 small">
+    <li>New users</li><li>Providers</li><li>Join requests</li>
+    <li>Orders by service</li><li>Orders by governorate</li><li>Completed orders</li>
+    <li>Cancelled orders</li><li>Stalled orders</li><li>Average order value</li>
+    <li>Platform commission</li><li>Provider earnings</li><li>Payments</li>
+    <li>Refunds</li><li>Complaints</li><li>Provider ratings</li>
+    <li>Top providers</li><li>Lowest performers</li><li>Response times</li>
+    <li>Quotes submitted and accepted</li><li>Most requested services</li><li>Most active customers</li>
+    <li>Discount codes</li><li>Subscriptions</li><li>Registration sources and campaigns</li>
+  </ul>
+  <p class="tnote">
+    The discount-code and subscription reports depend on phase-two functionality; they are
+    delivered in phase one as ready structures that populate as soon as those features are enabled.
+  </p>
+
+  <h2 style="margin-top:11mm"><span class="n">17</span> Marketing website</h2><div class="h2rule"></div>
+  <div class="cards c2">
+    <div class="card"><div class="h">Content</div><div class="b"><ul>
+      <li>Introduction to the app</li><li>Service types</li><li>How to order a service</li>
+      <li>How to register as a provider</li><li>App download links</li>
+      <li>Contact details</li><li>Terms and conditions</li><li>Privacy policy</li>
+      <li>Frequently asked questions</li><li>Contact form</li></ul></div></div>
+    <div class="card fill"><div class="h">Technical treatment</div><div class="b"><ul>
+      <li>Server-side rendering for load speed and search indexing</li>
+      <li>Correct Arabic meta tags and structured data</li>
+      <li>Page content managed from the admin panel</li>
+      <li>Contact form protected against automated submission</li>
+      <li>Fully responsive with RTL support</li>
+      <li>Analytics integration</li></ul></div></div>
+  </div>
+
+  <h2 style="margin-top:11mm"><span class="n">18</span> External integrations</h2><div class="h2rule"></div>
+  <div class="note warn">
+    <span class="t">An important financial distinction</span>
+    <strong>The cost of building each integration</strong> — RoboAgentix's work — is entirely
+    separate from <strong>the provider's fees</strong>, which the project owner pays directly to
+    that provider. Each integration is priced as its own line in section 5 of the commercial
+    document, as the specification explicitly requires.
+  </div>
+  <table class="compact">
+    <thead><tr><th style="width:24%">Integration</th><th style="width:22%">Purpose</th><th style="width:16%" class="mid">Phase</th><th>Fees</th></tr></thead>
+    <tbody>
+      <tr><td>OTP service</td><td>Phone number verification</td><td class="mid"><span class="tag g">Phase 1</span></td><td>Per message — on the project owner</td></tr>
+      <tr><td>SMS service</td><td>Critical notifications</td><td class="mid"><span class="tag g">Phase 1</span></td><td>Per message — on the project owner</td></tr>
+      <tr><td>Maps and geolocation</td><td>Location, distance and arrival time</td><td class="mid"><span class="tag g">Phase 1</span></td><td>By consumption</td></tr>
+      <tr><td>Payment gateway</td><td>Electronic payment</td><td class="mid"><span class="tag g">Phase 1</span></td><td>Per transaction</td></tr>
+      <tr><td>Firebase notifications</td><td>Push notifications</td><td class="mid"><span class="tag g">Phase 1</span></td><td>Free within standard limits</td></tr>
+      <tr><td>Email service</td><td>Invoices and alerts</td><td class="mid"><span class="tag g">Phase 1</span></td><td>Monthly subscription</td></tr>
+      <tr><td>Cloud media storage</td><td>Photos, video and documents</td><td class="mid"><span class="tag g">Phase 1</span></td><td>By capacity and transfer</td></tr>
+      <tr><td>Usage analytics</td><td>User behaviour</td><td class="mid"><span class="tag g">Phase 1</span></td><td>Free within standard limits</td></tr>
+      <tr><td>Crash monitoring</td><td>Error tracking</td><td class="mid"><span class="tag g">Phase 1</span></td><td>Free tier sufficient at launch</td></tr>
+      <tr><td>Google Play and App Store</td><td>App publishing</td><td class="mid"><span class="tag g">Phase 1</span></td><td>Developer account fees</td></tr>
+      <tr><td>WhatsApp Business</td><td>An additional notification channel</td><td class="mid"><span class="tag n">Optional</span></td><td>Priced on request</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════ 19 ═══════════════════ -->
+<section class="page-break">
+  <h2><span class="n">19</span> Security and data protection</h2><div class="h2rule"></div>
+  <table>
+    <thead><tr><th style="width:33%">Requirement in the specification</th><th>Implementation</th></tr></thead>
+    <tbody>
+      <tr><td>SSL-encrypted communication</td><td>TLS 1.3 enforced on every domain with HSTS, and certificate pinning in the app for sensitive paths.</td></tr>
+      <tr><td>Encryption of passwords and sensitive data</td><td>Argon2id hashing for any password, column-level encryption for sensitive fields, and disk encryption for backups.</td></tr>
+      <tr><td>Secure access tokens</td><td>Short-lived JWTs with rotating refresh tokens and reuse detection; tokens held in the device's encrypted store.</td></tr>
+      <tr><td>Bounded session length</td><td>A duration configurable from the panel, remote session termination, and active devices visible to the user.</td></tr>
+      <tr><td>Preventing repeated login attempts</td><td>Escalating rate limits by number, network address and device, with temporary lockout and an administrative alert.</td></tr>
+      <tr><td>Logging sensitive operations</td><td>An immutable audit log for every administrative and financial action, with actor, timestamp and before/after values.</td></tr>
+      <tr><td>Documents hidden from unauthorised staff</td><td>Documents in dedicated storage behind short-lived signed URLs, governed by permissions, with every access recorded.</td></tr>
+      <tr><td>Regular backups</td><td>Daily full backups with continuous log archiving, and documented periodic restore testing.</td></tr>
+      <tr><td>API protection</td><td>Mandatory authentication, strict input validation, per-route rate limiting, and prevention of over-fetching.</td></tr>
+      <tr><td>Protection against forged requests</td><td>Device integrity checks, signing keys for sensitive requests, and automated-pattern detection.</td></tr>
+      <tr><td>Fine-grained staff permissions</td><td>RBAC at action and field level, with privilege-escalation prevention and separation of duties on the financial path.</td></tr>
+      <tr><td>Deletion or masking under the privacy policy</td><td>Deletion on request, anonymising financial entries rather than deleting them so the ledger stays intact.</td></tr>
+    </tbody>
+  </table>
+  <p class="small">
+    In addition: automated dependency scanning on every build, and a manual review of the
+    critical paths — authentication, payments, permissions and file upload — before launch,
+    with the findings addressed within the delivery scope.
+  </p>
+</section>
+
+<!-- ═══════════════════ 20 · 21 · 22 ═══════════════════ -->
+<section class="page-break">
+  <h2><span class="n">20</span> Performance and scalability</h2><div class="h2rule"></div>
+  <table class="compact">
+    <thead><tr><th style="width:34%">Requirement</th><th>Implementation and target</th></tr></thead>
+    <tbody>
+      <tr><td>Responsive interfaces</td><td>A target of under 400 ms API response at the ninetieth percentile on common paths, with indexes designed for every query on the critical path.</td></tr>
+      <tr><td>Compressing photos and video before upload</td><td>On-device compression before sending, with thumbnails and multiple resolutions generated server-side and distributed via CDN.</td></tr>
+      <tr><td>Progressive data loading</td><td>Cursor pagination on every list, and lazy image loading.</td></tr>
+      <tr><td>Not stalling on a weak connection</td><td>A local read cache, a write queue replayed when the network returns, and clear status messaging.</td></tr>
+      <tr><td>Absorbing user and order growth</td><td>Stateless servers behind a load balancer, horizontally scaled workers, and database read replicas when needed.</td></tr>
+    </tbody>
+  </table>
+
+  <h2 style="margin-top:11mm"><span class="n">21</span> Reliability, backup and monitoring</h2><div class="h2rule"></div>
+  <div class="cards c2">
+    <div class="card"><div class="h">Data continuity</div><div class="b"><ul>
+      <li>Daily full backups with continuous log archiving</li>
+      <li>Point-in-time recovery</li>
+      <li>Documented periodic restore testing</li>
+      <li>A complete backup handed over at final delivery</li></ul></div></div>
+    <div class="card"><div class="h">Service continuity</div><div class="b"><ul>
+      <li>Fault monitoring with immediate alerting</li>
+      <li>Centralised error and log collection</li>
+      <li>No order loss on connection failure, via queues</li>
+      <li>A test environment entirely separate from production</li></ul></div></div>
+  </div>
+
+  <h2 style="margin-top:11mm"><span class="n">22</span> Testing and quality assurance</h2><div class="h2rule"></div>
+  <table class="compact">
+    <thead><tr><th style="width:24%">Type</th><th style="width:24%">Scope</th><th>Tooling and standard</th></tr></thead>
+    <tbody>
+      <tr><td>Unit tests</td><td>Critical business logic</td><td>No less than 70% coverage on the financial modules and the state machine.</td></tr>
+      <tr><td>Integration tests</td><td>APIs and the database</td><td>Against an isolated test database created and torn down per run.</td></tr>
+      <tr><td>End-to-end tests</td><td>Complete user journeys</td><td>The full order cycle from creation to rating.</td></tr>
+      <tr><td>Performance tests</td><td>Expected load</td><td>Peak scenarios against dispatch, quoting and messaging.</td></tr>
+      <tr><td>Security tests</td><td>Critical paths</td><td>Automated dependency scanning with manual review of authentication, payments, permissions and file upload.</td></tr>
+      <tr><td>Acceptance testing</td><td>The full acceptance criteria</td><td>Executing the scenarios in section 7 of the commercial document with the project owner present, signed off by minute.</td></tr>
+      <tr><td>Device testing</td><td>Android and iOS</td><td>A real-device matrix covering what is common in the target market.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════ 23 · 24 · 25 ═══════════════════ -->
+<section class="page-break">
+  <h2><span class="n">23</span> Infrastructure, deployment and operations</h2><div class="h2rule"></div>
+  <table class="compact">
+    <thead><tr><th style="width:20%">Environment</th><th style="width:26%">Purpose</th><th>Specification</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Development</strong></td><td>Day-to-day team work</td><td>Local containers matching production, with seed data.</td></tr>
+      <tr><td><strong>Staging</strong></td><td>Acceptance testing and review</td><td>A production-equivalent copy with anonymised data — <strong>an explicit requirement</strong> in the specification.</td></tr>
+      <tr><td><strong>Production</strong></td><td>Live operation</td><td>Load-balanced servers, a managed database with automated backups, and object storage with a CDN.</td></tr>
+    </tbody>
+  </table>
+  <p class="small">
+    An automated deployment pipeline: push → build → tests → security scan → deploy to staging →
+    approval → deploy to production with immediate rollback available. Hosting, domain and
+    external service accounts are created <strong>in the project owner's name</strong>.
+  </p>
+
+  <h2 style="margin-top:11mm"><span class="n">24</span> Readiness for future expansion</h2><div class="h2rule"></div>
+  <table class="compact">
+    <thead><tr><th style="width:30%">Required expansion</th><th>Architectural readiness in phase one</th></tr></thead>
+    <tbody>
+      <tr><td>New governorates and areas</td><td>The location hierarchy is data, not code — added from the panel immediately.</td></tr>
+      <tr><td>New countries</td><td>Currency, country code and time zone are fields in the data model from the outset.</td></tr>
+      <tr><td>New languages</td><td>All copy lives in translation files with internationalisation active — only translation remains.</td></tr>
+      <tr><td>New services</td><td>The dynamic field schema, with no code change — the core of the design.</td></tr>
+      <tr><td>New payment gateways</td><td>A unified payment interface — a gateway is added by writing an adapter.</td></tr>
+      <tr><td>Delivery companies</td><td>The job model can accept a "delivery" type within the same catalogue.</td></tr>
+      <tr><td>A subscription system</td><td>Plan and subscription tables are in the schema, and binding commission to a plan is ready.</td></tr>
+      <tr><td>Service insurance</td><td>Hook points in the order cycle for adding an insurance line and posting it financially.</td></tr>
+      <tr><td>A loyalty programme</td><td>The ledger accommodates points and promotional credit as entry types.</td></tr>
+      <tr><td>A call centre</td><td>APIs allow external systems to read and act within permission limits.</td></tr>
+      <tr><td>A full customer website</td><td>APIs are client-agnostic — a web interface can be built directly on top.</td></tr>
+    </tbody>
+  </table>
+
+  <h2 style="margin-top:11mm"><span class="n">25</span> Technical deliverables at handover</h2><div class="h2rule"></div>
+  <ul class="check cols2 small">
+    <li>Final requirements analysis document</li>
+    <li>Process flow diagrams</li>
+    <li>Database design</li>
+    <li>UX design</li>
+    <li>An approved interactive prototype of the app interfaces</li>
+    <li>Android application</li>
+    <li>iOS application</li>
+    <li>Backend system</li>
+    <li>Admin panel</li>
+    <li>Database</li>
+    <li>Documented APIs</li>
+    <li>Marketing website</li>
+    <li>Notification integration</li>
+    <li>Maps integration</li>
+    <li>OTP integration</li>
+    <li>The agreed payment integration</li>
+    <li>Functional, security and performance testing</li>
+    <li>App store submissions</li>
+    <li>Complete source code</li>
+    <li>Hosting and database credentials</li>
+    <li>Admin panel user guide</li>
+    <li>Training for administrative staff</li>
+    <li>A backup at handover</li>
+    <li>Technical documentation for the system and its APIs</li>
+  </ul>
+
+  <div class="note dark" style="margin-top:8mm">
+    <span class="t">RoboAgentix's undertaking</span>
+    Ownership of the application and systems rests entirely with the project owner; the complete
+    source code is handed over; and store, hosting, domain and external service accounts are
+    created in the project owner's name. RoboAgentix may not resell the same system with the
+    project's data or identity, nor use customer or provider data for any other purpose. The
+    legal detail is in section 9 of the commercial document.
+  </div>
+
+  <div class="endmark">
+    <span class="ra" style="font-size:10.5pt">Rob<span class="bot"><i></i><i></i></span>Agent<span class="ix">ix</span></span>
+    <div style="margin-top:2.6mm">End of the technical document · RAX-TEC-AWNAK-001-EN · Rev. A</div>
+    <div>Read together with RAX-FIN-AWNAK-001-EN — the Commercial Proposal</div>
+  </div>
+</section>
+
+</body>
+</html>

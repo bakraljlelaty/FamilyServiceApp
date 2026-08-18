@@ -274,3 +274,8 @@ code{font-family:'Plex',monospace;background:var(--tint);border-radius:.9mm;padd
 /* keep a heading and its table together on one page */
 .keep{page-break-inside:avoid;break-inside:avoid;}
 .keep h3{margin-top:0;}
+
+/* Keep a single trailing line from claiming a page of its own. Chromium honours
+   these on block containers; the wrapped flex rows need the explicit rule. */
+p,li,.card .b,.note,.step .d,.figcap,.tnote{orphans:3;widows:3;}
+.pills,.states,.sw,.stats{page-break-inside:avoid;break-inside:avoid;}

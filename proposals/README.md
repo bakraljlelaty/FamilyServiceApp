@@ -1,22 +1,26 @@
 # RoboAgentix — AWNAK proposal documents
 
-Two Arabic (RTL) proposal documents for **عَوْنَك / AWNAK**, the home-and-family
-services platform, produced for RoboAgentix For Software Development.
+Two proposal documents for **عَوْنَك / AWNAK**, the home-and-family services
+platform, produced for RoboAgentix For Software Development — in Arabic (RTL)
+and English (LTR).
 
-Each is produced as both a **PDF** (the presentation artefact) and a **.docx**
-(the working one — prices and wording stay editable).
+| Output | Pages | Formats | Covers |
+| --- | --- | --- | --- |
+| `RoboAgentix-AWNAK-01-Technical-Proposal-AR` | 34 | PDF + docx | What gets built and with which technology — architecture, stack, data model, dispatch engine, order lifecycle, money layer, integrations, security, performance, delivery artefacts |
+| `RoboAgentix-AWNAK-02-Commercial-Proposal-AR` | 22 | PDF + docx | Line-item pricing, delivery model, 16-week schedule, payment plan, warranty and support, change control, ownership, acceptance criteria |
+| `RoboAgentix-AWNAK-01-Technical-Proposal-EN` | 37 | PDF | The technical document in English |
+| `RoboAgentix-AWNAK-02-Commercial-Proposal-EN` | 24 | PDF | The commercial document in English |
 
-| Output | Pages | Covers |
-| --- | --- | --- |
-| `RoboAgentix-AWNAK-01-Technical-Proposal-AR` | 34 | What gets built and with which technology — architecture, stack, data model, dispatch engine, order lifecycle, money layer, integrations, security, performance, delivery artefacts |
-| `RoboAgentix-AWNAK-02-Commercial-Proposal-AR` | 22 | Line-item pricing, delivery model, 16-week schedule, payment plan, warranty and support, change control, ownership, acceptance criteria |
+The Arabic pair is also produced as **.docx** so prices and wording stay
+editable. The English pair is **PDF only**.
 
 Headline commercial figures: **$5,800** for phase one over **16 weeks**, five
 payments tied to milestones, 180 days of warranty, and **$4,700** of phase-two
 options priced individually. Each external integration is priced on its own
 line, as the specification requires.
 
-Document references are `RAX-TEC-AWNAK-001` and `RAX-FIN-AWNAK-001`, both Rev. A.
+Document references are `RAX-TEC-AWNAK-001` and `RAX-FIN-AWNAK-001`, with `-EN`
+appended for the English editions. All are Rev. A.
 The two are written to be read together: every price line in the commercial
 document points at a scope described in the technical one.
 
@@ -38,9 +42,9 @@ document points at a scope described in the technical one.
 
 ```bash
 pip install playwright pypdfium2 pillow python-docx beautifulsoup4 lxml
-python3 proposals/build.py          # PDFs   — both documents
-python3 proposals/build_docx.py     # Word   — both documents
-python3 proposals/build.py 01       # just the technical one
+python3 proposals/build.py                 # PDFs — all four
+python3 proposals/build_docx.py            # Word — the Arabic pair
+python3 proposals/build.py 01-technical-en # just one document
 ```
 
 Chromium does the layout, so Arabic shaping and RTL behave exactly as they do on
@@ -65,6 +69,17 @@ colour swatches — as pictures, because Word has no faithful equivalent.
 > refuses to open. `build_docx.py` inserts at the schema position instead — see
 > `_ORDER`. A table cell must also never end on a nested table.
 
+## Languages
+
+`assets/theme.css` is Arabic-first and RTL. `assets/theme-en.css` imports it and
+overrides only what direction and typeface require — Inter instead of Tajawal,
+mirrored list bullets, callout borders, table alignment and Gantt offsets. The
+Arabic documents are therefore untouched by anything done for English.
+
+`build.py` carries a language per document, which selects the typeface, the
+confidentiality wording and the text direction used in the running header and
+footer.
+
 ## The logo
 
 Both builds use the real RoboAgentix artwork:
@@ -87,10 +102,13 @@ nothing breaks — but the real files are committed and should be used.
 proposals/
   build.py                  # HTML -> PDF
   build_docx.py             # HTML -> Word
-  src/01-technical.html     # content
+  src/01-technical.html     # content — Arabic
   src/02-commercial.html
-  assets/theme.css          # the RoboAgentix document theme
-  assets/fonts/             # Tajawal + IBM Plex Sans Arabic
+  src/01-technical-en.html  # content — English
+  src/02-commercial-en.html
+  assets/theme.css          # the RoboAgentix document theme (Arabic, RTL)
+  assets/theme-en.css       # English overrides (LTR)
+  assets/fonts/             # Tajawal + Inter + IBM Plex Sans Arabic
   assets/screens/           # 15 AWNAK screens from the approved prototype
   assets/awnak-mark.png     # AWNAK app mark
   out/                      # generated PDFs and .docx

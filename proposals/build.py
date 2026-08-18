@@ -34,7 +34,7 @@ MARGIN = {"top": "26mm", "bottom": "20mm", "left": "16mm", "right": "16mm"}
 TPL_CSS = """
 *{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-sizing:border-box;}
 body{margin:0;padding:0;}
-table.bar{width:100%;border-collapse:collapse;font-family:'Tajawal',sans-serif;
+table.bar{width:100%;border-collapse:collapse;font-family:'__FONT__',sans-serif;
           font-size:7px;color:#8B968F;}
 table.bar td{padding:0;vertical-align:middle;white-space:nowrap;}
 .l{text-align:left;} .r{text-align:right;direction:rtl;}
@@ -72,33 +72,48 @@ def header_logo() -> str:
     return f'<img src="data:image/png;base64,{b64}" style="height:12px;width:auto;display:block;">'
 
 
-def _bar(left: str, right: str, pad_top: str, pad_bottom: str) -> str:
-    return (f'<style>{TPL_CSS}</style>'
+# The Arabic pages set Tajawal; the English pages set Inter. The margin-box
+# document resolves both by family name from the system font cache.
+LANG = {
+    "ar": {"font": "Tajawal", "conf": "سرّي تجاريًا", "dir": "rtl"},
+    "en": {"font": "Inter", "conf": "Commercial in confidence", "dir": "ltr"},
+}
+
+
+def _bar(left: str, right: str, pad_top: str, pad_bottom: str, lang: str) -> str:
+    css = TPL_CSS.replace("__FONT__", LANG[lang]["font"])
+    rdir = LANG[lang]["dir"]
+    return (f'<style>{css}</style>'
             f'<div style="width:100%;padding:{pad_top} 16mm {pad_bottom} 16mm;">'
             f'<table class="bar"><tr>'
-            f'<td class="l">{left}</td><td class="r">{right}</td>'
+            f'<td class="l">{left}</td>'
+            f'<td class="r" style="direction:{rdir}">{right}</td>'
             f'</tr></table></div>')
 
 
-def header(doc_title: str) -> str:
-    return _bar(header_logo(), f'<span>{doc_title}</span>', "11mm", "0")
+def header(doc_title: str, lang: str) -> str:
+    return _bar(header_logo(), f'<span>{doc_title}</span>', "11mm", "0", lang)
 
 
-def footer() -> str:
-    right = ('<span class="conf">سرّي تجاريًا</span>'
+def footer(lang: str) -> str:
+    right = (f'<span class="conf">{LANG[lang]["conf"]}</span>'
              '&nbsp;&nbsp;·&nbsp;&nbsp;'
              '<span class="pg"><span class="pageNumber"></span> / '
              '<span class="totalPages"></span></span>')
     left = ('RoboAgentix For Software Development &nbsp;·&nbsp; roboagentix.ai '
             '&nbsp;·&nbsp; contact@roboagentix.ai')
-    return _bar(left, right, "0", "9mm")
+    return _bar(left, right, "0", "9mm", lang)
 
 
 DOCS = [
     ("01-technical.html", "RoboAgentix-AWNAK-01-Technical-Proposal-AR.pdf",
-     "المراجعة (A) — عَوْنَك — العرض الفني التفصيلي"),
+     "المراجعة (A) — عَوْنَك — العرض الفني التفصيلي", "ar"),
     ("02-commercial.html", "RoboAgentix-AWNAK-02-Commercial-Proposal-AR.pdf",
-     "المراجعة (A) — عَوْنَك — العرض المالي وآلية العمل والتسليم"),
+     "المراجعة (A) — عَوْنَك — العرض المالي وآلية العمل والتسليم", "ar"),
+    ("01-technical-en.html", "RoboAgentix-AWNAK-01-Technical-Proposal-EN.pdf",
+     "Rev. A — AWNAK — Technical Proposal", "en"),
+    ("02-commercial-en.html", "RoboAgentix-AWNAK-02-Commercial-Proposal-EN.pdf",
+     "Rev. A — AWNAK — Commercial Proposal", "en"),
 ]
 
 
@@ -118,7 +133,7 @@ def merge_clean_cover(with_furniture: pathlib.Path, clean: pathlib.Path,
 
 
 def ensure_fonts() -> None:
-    """Make Tajawal resolvable by family name, for the header/footer templates.
+    """Make Tajawal and Inter resolvable by family name, for the margin boxes.
 
     The page itself loads the fonts through @font-face from assets/fonts, but
     Chromium's margin-box document cannot, so it needs them in the font cache.
@@ -128,7 +143,7 @@ def ensure_fonts() -> None:
 
     if shutil.which("fc-list"):
         installed = subprocess.run(["fc-list", ":family"], capture_output=True, text=True)
-        if "Tajawal" in installed.stdout:
+        if "Tajawal" in installed.stdout and "Inter" in installed.stdout:
             return
     dest = pathlib.Path("/usr/share/fonts/truetype/roboagentix")
     try:
@@ -137,7 +152,7 @@ def ensure_fonts() -> None:
             shutil.copy2(ttf, dest / ttf.name)
         if shutil.which("fc-cache"):
             subprocess.run(["fc-cache", "-f"], capture_output=True)
-        print("  · installed Tajawal into the system font cache")
+        print("  · installed Tajawal and Inter into the system font cache")
     except OSError as exc:
         print(f"  ! could not install fonts ({exc}); header/footer may fall back")
 
@@ -154,7 +169,7 @@ def build(only: str | None = None) -> None:
     with sync_playwright() as p:
         browser = p.chromium.launch(executable_path=CHROME, args=["--no-sandbox"])
         page = browser.new_page()
-        for src_name, pdf_name, running_title in targets:
+        for src_name, pdf_name, running_title, lang in targets:
             src = SRC / src_name
             if not src.exists():
                 print(f"  skip {src_name} (not found)")
@@ -170,8 +185,8 @@ def build(only: str | None = None) -> None:
             furn = tmp / f"{src_name}.furn.pdf"
             clean = tmp / f"{src_name}.clean.pdf"
             page.pdf(path=str(furn), display_header_footer=True,
-                     header_template=header(running_title),
-                     footer_template=footer(), **common)
+                     header_template=header(running_title, lang),
+                     footer_template=footer(lang), **common)
             page.pdf(path=str(clean), display_header_footer=False, **common)
 
             target = OUT / pdf_name

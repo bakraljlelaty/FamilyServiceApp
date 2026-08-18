@@ -11,8 +11,8 @@ Each is produced as both a **PDF** (the presentation artefact) and a **.docx**
 | `RoboAgentix-AWNAK-01-Technical-Proposal-AR` | 34 | What gets built and with which technology — architecture, stack, data model, dispatch engine, order lifecycle, money layer, integrations, security, performance, delivery artefacts |
 | `RoboAgentix-AWNAK-02-Commercial-Proposal-AR` | 22 | Line-item pricing, delivery model, 16-week schedule, payment plan, warranty and support, change control, ownership, acceptance criteria |
 
-Headline commercial figures: **$13,500** for phase one over **16 weeks**, five
-payments tied to milestones, 180 days of warranty, and **$11,000** of phase-two
+Headline commercial figures: **$5,800** for phase one over **16 weeks**, five
+payments tied to milestones, 180 days of warranty, and **$4,700** of phase-two
 options priced individually. Each external integration is priced on its own
 line, as the specification requires.
 
